@@ -210,7 +210,7 @@ int chatbot_is_question(const char* intent) {
 int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 
 	snprintf(response, n, "Hi There!");
-
+	knowledge_read("D:/1002 Programming/Project/C Programming/ICT1002CProject/ICT1002CProject/ICT1002CProject/ICT1002_Group Project Assignment_AY19_T1_Sample.ini");
 	return 0;
 
 }

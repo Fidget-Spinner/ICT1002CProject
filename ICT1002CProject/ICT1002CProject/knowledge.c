@@ -75,7 +75,24 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
 int knowledge_read(FILE *f) {
 	
 	/* to be implemented */
-	
+	FILE* fptr;
+
+	char c;
+	fptr = fopen(f, "r");
+	if (fptr == NULL)
+	{
+		printf("Cannot open file \n");
+		exit(0);
+	}
+	c = fgetc(fptr);
+	while (c != EOF)
+	{
+		printf("%c", c);
+		c = fgetc(fptr);
+	}
+
+	fclose(fptr);
+
 	return 0;
 }
 
