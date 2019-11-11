@@ -68,6 +68,34 @@ const char* chatbot_username() {
 
 }
 
+typedef struct {
+	char* intent;
+	char* responses[3]; //To change amount of strings responses have
+}record;
+
+record KnowledgeBase[] = {
+	{"hello",
+	{"Greetings!", "Hey there!", "It's good to see you!"}
+	},
+
+	{"how",
+	{"I'm doing great!", "T_T Not so good ...", "^_^ Great!"}
+	},
+
+	{"morning",
+	{"It's a beautiful morning!", "Rise and Shine!!", "Good morning!"}
+	},
+
+	{"afternoon",
+	{"Good afternoon!", "Lunchtime!!", "Time for lunch!!"}
+	},
+
+	{"nights",
+	{"Goodnight!", "I'm getting sleepy ...", "Sweet dreams!"}
+	}
+};
+
+
 
 /*
  * Get a response to user input.
@@ -155,7 +183,7 @@ int chatbot_do_exit(int inc, char* inv[], char* response, int n) {
  */
 int chatbot_is_load(const char* intent) {
 
-	return 0;
+	return compare_token(intent, "load") == 0;
 
 }
 
@@ -171,6 +199,14 @@ int chatbot_is_load(const char* intent) {
  */
 int chatbot_do_load(int inc, char* inv[], char* response, int n) {
 
+	if (knowledge_read(inv[1]) == 0) //Test for error reading
+	{
+		snprintf(response, n, "Successfully loaded!");
+	}
+	else if (knowledge_read(inv[1]) == 1)
+	{
+		snprintf(response, n, "Error opening file!");
+	}
 
 	return 0;
 
@@ -210,7 +246,7 @@ int chatbot_is_question(const char* intent) {
 int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 
 	snprintf(response, n, "Hi There!");
-	knowledge_read("D:/1002 Programming/Project/C Programming/ICT1002CProject/ICT1002CProject/ICT1002CProject/ICT1002_Group Project Assignment_AY19_T1_Sample.ini");
+
 	return 0;
 
 }
@@ -301,9 +337,7 @@ int chatbot_do_save(int inc, char* inv[], char* response, int n) {
  */
 int chatbot_is_smalltalk(const char* intent) {
 
-	/* to be implemented */
-
-	return 0;
+	return compare_token(intent, "hello") == 0 || compare_token(intent, "morning") == 0 || compare_token(intent, "afternoon") == 0 || compare_token(intent, "nights") == 0 || compare_token(intent, "how") == 0;;
 
 }
 
@@ -319,9 +353,15 @@ int chatbot_is_smalltalk(const char* intent) {
  *   1, if the chatbot should stop chatting (e.g. the smalltalk was "goodbye" etc.)
  */
 int chatbot_do_smalltalk(int inc, char* inv[], char* response, int n) {
-
-	/* to be implemented */
-
+	char* smalltalkoutput;
+	int r = rand() % 3;
+	for (int i = 0; i < sizeof(KnowledgeBase) / sizeof(KnowledgeBase[0]); ++i) {
+		if (strcmp(KnowledgeBase[i].intent, inv[0]) == 0) {
+			int r = rand() % 3; //Random number from 0-2 for random response.
+			smalltalkoutput = KnowledgeBase[i].responses[r];
+			snprintf(response, n, smalltalkoutput);
+		}
+	}
 	return 0;
 
 }

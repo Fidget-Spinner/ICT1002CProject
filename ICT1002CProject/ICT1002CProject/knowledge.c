@@ -11,32 +11,33 @@
  *
  * You may add helper functions as necessary.
  */
- 
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "chat1002.h"
+#include<Windows.h>;
 
-/*
- * Get the response to a question.
- *
- * Input:
- *   intent   - the question word
- *   entity   - the entity
- *   response - a buffer to receive the response
- *   n        - the maximum number of characters to write to the response buffer
- *
- * Returns:
- *   KB_OK, if a response was found for the intent and entity (the response is copied to the response buffer)
- *   KB_NOTFOUND, if no response could be found
- *   KB_INVALID, if 'intent' is not a recognised question word
- */
-int knowledge_get(const char *intent, const char *entity, char *response, int n) {
-	
+ /*
+  * Get the response to a question.
+  *
+  * Input:
+  *   intent   - the question word
+  *   entity   - the entity
+  *   response - a buffer to receive the response
+  *   n        - the maximum number of characters to write to the response buffer
+  *
+  * Returns:
+  *   KB_OK, if a response was found for the intent and entity (the response is copied to the response buffer)
+  *   KB_NOTFOUND, if no response could be found
+  *   KB_INVALID, if 'intent' is not a recognised question word
+  */
+int knowledge_get(const char* intent, const char* entity, char* response, int n) {
+
 	/* to be implemented */
-	
+
 	return KB_NOTFOUND;
-	
+
 }
 
 
@@ -55,12 +56,12 @@ int knowledge_get(const char *intent, const char *entity, char *response, int n)
  *   KB_NOMEM, if there was a memory allocation failure
  *   KB_INVALID, if the intent is not a valid question word
  */
-int knowledge_put(const char *intent, const char *entity, const char *response) {
-	
+int knowledge_put(const char* intent, const char* entity, const char* response) {
+
 	/* to be implemented */
-	
+
 	return KB_INVALID;
-	
+
 }
 
 
@@ -72,28 +73,67 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
  *
  * Returns: the number of entity/response pairs successful read from the file
  */
-int knowledge_read(FILE *f) {
-	
+int knowledge_read(FILE* f) {
+
 	/* to be implemented */
 	FILE* fptr;
+	int i = 0;
+	int result;
+	int swap = 0;
+	int indexofknowledge = -1;;
 
-	char c;
 	fptr = fopen(f, "r");
 	if (fptr == NULL)
 	{
-		printf("Cannot open file \n");
-		exit(0);
+		return result = 1;
 	}
-	c = fgetc(fptr);
-	while (c != EOF)
+
+	while (fgets(LoadedKnowledge[i], 255, fptr) != NULL) //Loop through ini file and store content to global knowledge
 	{
-		printf("%c", c);
-		c = fgetc(fptr);
+		if ((LoadedKnowledge[i])[0] == '[')
+		{
+			if (strcmp(strtok(LoadedKnowledge[i], "[]"), "what") == 0)
+			{
+				swap = 0;
+				indexofknowledge = -1;
+			}
+
+			else if (strcmp(strtok(LoadedKnowledge[i], "[]"), "who") == 0)
+			{
+				swap = 1;
+				indexofknowledge = -1;
+			}
+
+			else if (strcmp(strtok(LoadedKnowledge[i], "[]"), "where") == 0)
+			{
+				swap = 2;
+				indexofknowledge = -1;
+			}
+		}
+		else if (swap == 0) //what
+		{
+			LoadKnowledgeWhat[indexofknowledge].entity = LoadedKnowledge[i];
+			printf("%s\n", LoadKnowledgeWhat[indexofknowledge].entity);
+		}
+		else if (swap == 1) //who
+		{
+			LoadKnowledgeWho[indexofknowledge].entity = LoadedKnowledge[i];
+			printf("%s\n", LoadKnowledgeWho[indexofknowledge].entity);
+		}
+		else if (swap == 2) //where
+		{
+			LoadKnowledgeWhere[indexofknowledge].entity = LoadedKnowledge[i];
+			printf("%s\n", LoadKnowledgeWhere[indexofknowledge].entity);
+		}
+
+		i++;
+		indexofknowledge++;
 	}
 
 	fclose(fptr);
 
-	return 0;
+
+	return result = 0;
 }
 
 
@@ -101,9 +141,9 @@ int knowledge_read(FILE *f) {
  * Reset the knowledge base, removing all know entitities from all intents.
  */
 void knowledge_reset() {
-	
+
 	/* to be implemented */
-	
+
 }
 
 
@@ -113,8 +153,8 @@ void knowledge_reset() {
  * Input:
  *   f - the file
  */
-void knowledge_write(FILE *f) {
-	
+void knowledge_write(FILE* f) {
+
 	/* to be implemented */
-	
+
 }
