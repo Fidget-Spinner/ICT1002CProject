@@ -29,22 +29,17 @@
 #define KB_NOMEM    -3
 
 /*Global storage for loaded ini content*/
-typedef struct {
+/*Edit it to use the SmallChat struct format*/
+typedef struct knowledgerecord {
 	char* entity;
 	char* responses; //To change amount of strings responses have
 }knowledgerecord;
 
-/*This 3 struct arrays stores Loaded Ini File Inputs in this format:
-{{entity},{response}}, {{entity},{response}}, {{entity},{response}}
-Index 0					Index 1					Index 2
-
-It has 255 individual struct arrays for individual entity and responses
-*/
 knowledgerecord LoadKnowledgeWhat[255];
 knowledgerecord LoadKnowledgeWhere[255];
 knowledgerecord LoadKnowledgeWho[255];
 
-//Temp storage for loop to store ini variables 
+
 char LoadedKnowledge[255][255];
 
 /* functions defined in main.c */

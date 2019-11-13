@@ -18,6 +18,7 @@
 #include "chat1002.h"
 #include<Windows.h>;
 
+
  /*
   * Get the response to a question.
   *
@@ -75,8 +76,9 @@ int knowledge_put(const char* intent, const char* entity, const char* response) 
  */
 int knowledge_read(FILE* f) {
 
-	/* to be implemented */
+
 	FILE* fptr;
+	/* to be implemented */
 	int i = 0;
 	int result;
 	int swap = 0;
@@ -90,7 +92,7 @@ int knowledge_read(FILE* f) {
 
 	while (fgets(LoadedKnowledge[i], 255, fptr) != NULL) //Loop through ini file and store content to global knowledge
 	{
-		if ((LoadedKnowledge[i])[0] == '[')
+		if (LoadedKnowledge[i][0] == '[')
 		{
 			if (strcmp(strtok(LoadedKnowledge[i], "[]"), "what") == 0)
 			{
@@ -110,22 +112,36 @@ int knowledge_read(FILE* f) {
 				indexofknowledge = -1;
 			}
 		}
-		else if (swap == 0) //what
+		else if (LoadedKnowledge[i][0] == '\n' || LoadedKnowledge[i] == "")
 		{
-			LoadKnowledgeWhat[indexofknowledge].entity = LoadedKnowledge[i];
-			printf("%s\n", LoadKnowledgeWhat[indexofknowledge].entity);
+			continue;
 		}
-		else if (swap == 1) //who
+		else if (strchr(LoadedKnowledge[i], '=') != NULL)
 		{
-			LoadKnowledgeWho[indexofknowledge].entity = LoadedKnowledge[i];
-			printf("%s\n", LoadKnowledgeWho[indexofknowledge].entity);
-		}
-		else if (swap == 2) //where
-		{
-			LoadKnowledgeWhere[indexofknowledge].entity = LoadedKnowledge[i];
-			printf("%s\n", LoadKnowledgeWhere[indexofknowledge].entity);
-		}
+			if (swap == 0) //what
+			{
+				LoadKnowledgeWhat[indexofknowledge].entity = strtok(LoadedKnowledge[i], "=");
+				LoadKnowledgeWhat[indexofknowledge].responses = strtok(NULL, "=");
+				//printf("%s\n", LoadKnowledgeWhat[indexofknowledge].entity); //Only for testing purposes
+				//printf("%s\n", LoadKnowledgeWhat[indexofknowledge].responses); //Only for testing purposes
 
+			}
+			else if (swap == 1) //who
+			{
+
+				LoadKnowledgeWho[indexofknowledge].entity = strtok(LoadedKnowledge[i], "=");
+				LoadKnowledgeWho[indexofknowledge].responses = strtok(NULL, "=");
+				//printf("%s\n", LoadKnowledgeWho[indexofknowledge].entity); //Only for testing purposes
+				//printf("%s\n", LoadKnowledgeWho[indexofknowledge].responses); //Only for testing purposes
+			}
+			else if (swap == 2) //where
+			{
+				LoadKnowledgeWhere[indexofknowledge].entity = strtok(LoadedKnowledge[i], "=");
+				LoadKnowledgeWhere[indexofknowledge].responses = strtok(NULL, "=");
+				//printf("%s\n", LoadKnowledgeWhere[indexofknowledge].entity); //Only for testing purposes
+				//printf("%s\n", LoadKnowledgeWhere[indexofknowledge].responses); //Only for testing purposes
+			}
+		}
 		i++;
 		indexofknowledge++;
 	}
