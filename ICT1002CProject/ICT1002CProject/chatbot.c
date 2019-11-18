@@ -212,7 +212,6 @@ int chatbot_do_load(int inc, char* inv[], char* response, int n) {
 
 }
 
-
 /*
  * Determine whether an intent is a question.
  *
@@ -295,9 +294,7 @@ int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 			snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
 		}
 	}
-
-
-	if (strcmp(inv[0], "where") == 0) //Check for intent
+	else if (strcmp(inv[0], "where") == 0) //Check for intent
 	{
 		if (inv[1] == NULL)
 		{
@@ -344,9 +341,7 @@ int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 			snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
 		}
 	}
-
-
-	if (strcmp(inv[0], "who") == 0) //Check for intent
+	else if (strcmp(inv[0], "who") == 0) //Check for intent
 	{
 		if (inv[1] == NULL)
 		{
@@ -392,6 +387,9 @@ int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 		else {
 			snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
 		}
+	}
+	else {
+		snprintf(response, n, "I dont understand \"%s\"", inv[0]); //If question is inproper, break
 	}
 
 	return 0;
