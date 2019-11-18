@@ -282,6 +282,7 @@ int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 
 					}
 					else {
+						snprintf(response, n, "Question not found! Please tell me a response!"); // Question Not Found, Run write Function here
 						break;
 					}
 				}
@@ -330,6 +331,7 @@ int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 
 					}
 					else {
+						snprintf(response, n, "Question not found! Please tell me a response!"); // Question Not Found, Run write Function here
 						break;
 					}
 				}
@@ -378,6 +380,7 @@ int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 
 					}
 					else {
+						snprintf(response, n, "I don't know.  Please tell me a response!"); // Question Not Found, Run write Function here
 						break;
 					}
 				}
@@ -424,6 +427,10 @@ int chatbot_is_reset(const char* intent) {
  */
 int chatbot_do_reset(int inc, char* inv[], char* response, int n) {
 
+	memset(LoadedKnowledge, '\0', sizeof(LoadedKnowledge));
+	memset(LoadKnowledgeWhat, '\0', sizeof(LoadKnowledgeWhat));
+	memset(LoadKnowledgeWhere, '\0', sizeof(LoadKnowledgeWhere));
+	memset(LoadKnowledgeWho, '\0', sizeof(LoadKnowledgeWho));
 	snprintf(response, n, "Chatbot reset!");
 
 	return 0;
