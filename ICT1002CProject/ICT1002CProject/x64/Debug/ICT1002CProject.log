@@ -1,0 +1,13 @@
+﻿  chatbot.c
+D:\GitFork\ICT1002CProject\ICT1002CProject\ICT1002CProject\chatbot.c(202,27): warning C4133: 'function': incompatible types - from 'char *' to 'FILE *'
+D:\GitFork\ICT1002CProject\ICT1002CProject\ICT1002CProject\chatbot.c(206,32): warning C4133: 'function': incompatible types - from 'char *' to 'FILE *'
+D:\GitFork\ICT1002CProject\ICT1002CProject\ICT1002CProject\chatbot.c(264,36): warning C4047: 'function': 'const char *' differs in levels of indirection from 'int'
+D:\GitFork\ICT1002CProject\ICT1002CProject\ICT1002CProject\chatbot.c(264,36): warning C4024: 'strcat': different types for formal and actual parameter 2
+  knowledge.c
+D:\GitFork\ICT1002CProject\ICT1002CProject\ICT1002CProject\chatbot.c(506,14): warning C4013: 'rand' undefined; assuming extern returning int
+D:\GitFork\ICT1002CProject\ICT1002CProject\ICT1002CProject\knowledge.c(19,9): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  main.c
+D:\GitFork\ICT1002CProject\ICT1002CProject\ICT1002CProject\knowledge.c(87,16): warning C4133: 'function': incompatible types - from 'FILE *' to 'const char *'
+  Generating Code...
+D:\GitFork\ICT1002CProject\ICT1002CProject\ICT1002CProject\main.c(54,27): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  ICT1002CProject.vcxproj -> D:\GitFork\ICT1002CProject\ICT1002CProject\x64\Debug\ICT1002CProject.exe
