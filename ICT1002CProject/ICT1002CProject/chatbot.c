@@ -198,14 +198,19 @@ int chatbot_is_load(const char* intent) {
  *   0 (the chatbot always continues chatting after loading knowledge)
  */
 int chatbot_do_load(int inc, char* inv[], char* response, int n) {
-
-	if (knowledge_read(inv[1]) == 0) //Test for error reading
+	if (inv[1] == "" || inv[1] == NULL)
 	{
-		snprintf(response, n, "Successfully loaded!");
+		snprintf(response, n, "Error missing filename!");
 	}
-	else if (knowledge_read(inv[1]) == 1)
-	{
-		snprintf(response, n, "Error opening file!");
+	else {
+		if (knowledge_read(inv[1]) == 0) //Test for error reading
+		{
+			snprintf(response, n, "Successfully loaded!");
+		}
+		else if (knowledge_read(inv[1]) == 1)
+		{
+			snprintf(response, n, "Error opening file!");
+		}
 	}
 
 	return 0;
@@ -261,7 +266,7 @@ int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 					if (inv[b + 1] != NULL)
 					{
 						strcat(questionEntityPtr, inv[b]); //store input entity 
-						strcat(questionEntityPtr, ' '); //check for space and insert space
+						strcat(questionEntityPtr, " "); //check for space and insert space
 					}
 					else
 					{
@@ -277,6 +282,7 @@ int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 						{
 							snprintf(response, n, LoadKnowledgeWhat[i].responses); //print response
 							questionEntityPtr = "";
+							break;
 						}
 
 					}
@@ -324,6 +330,7 @@ int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 						{
 							snprintf(response, n, LoadKnowledgeWhere[i].responses); //print response		
 							questionEntityPtr = "";
+							break;
 						}
 
 					}
@@ -371,6 +378,7 @@ int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 						{
 							snprintf(response, n, LoadKnowledgeWho[i].responses); //print response		
 							questionEntityPtr = "";
+							break;
 						}
 
 					}
@@ -425,10 +433,7 @@ int chatbot_is_reset(const char* intent) {
  */
 int chatbot_do_reset(int inc, char* inv[], char* response, int n) {
 
-	memset(LoadedKnowledge, '\0', sizeof(LoadedKnowledge));
-	memset(LoadKnowledgeWhat, '\0', sizeof(LoadKnowledgeWhat));
-	memset(LoadKnowledgeWhere, '\0', sizeof(LoadKnowledgeWhere));
-	memset(LoadKnowledgeWho, '\0', sizeof(LoadKnowledgeWho));
+	knowledge_reset();
 	snprintf(response, n, "Chatbot reset!");
 
 	return 0;

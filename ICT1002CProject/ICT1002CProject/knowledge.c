@@ -157,8 +157,10 @@ int knowledge_read(FILE* f) {
  * Reset the knowledge base, removing all know entitities from all intents.
  */
 void knowledge_reset() {
-
-	/* to be implemented */
+	memset(LoadedKnowledge, '\0', sizeof(LoadedKnowledge));
+	memset(LoadKnowledgeWhat, '\0', sizeof(LoadKnowledgeWhat));
+	memset(LoadKnowledgeWhere, '\0', sizeof(LoadKnowledgeWhere));
+	memset(LoadKnowledgeWho, '\0', sizeof(LoadKnowledgeWho));
 
 }
 
