@@ -47,9 +47,10 @@ DATA_NODE * searchKeyGetValue(DATA_NODE * hashMap[], char * key, char buf[MAX_LE
 * @param hashMap The hashMap to insert into.
 * @param key The key to insert.
 * @param value The corresponding value to insert.
+* @param override Whether to override the current key-value pair 1 is true, 0 is false.
 * returns 1 if successful, 0 if failed
 */
-int insertHashEntry(DATA_NODE * hashMap[], char * key, char * value){
+int insertHashEntry(DATA_NODE * hashMap[], char * key, char * value, int override){
   unsigned long index = hash(key);
   DATA_NODE *tableEntry = hashMap[index];
   DATA_NODE *newNode = createNode(key, value);
@@ -64,10 +65,19 @@ int insertHashEntry(DATA_NODE * hashMap[], char * key, char * value){
     printf("[DEBUG]HashMap: Hash Collision (this is usually normal)\n");
     // if something is there, then a collision might have occurred
     // checks if same key, if it is, then reject it since hashmaps cant have duplicate keys
+		// if override=1, then override that value
     if (strcmp(tableEntry->key, key) == 0 ){
-      printf("[DEBUG]HashMap: No duplicate keys allowed\n");
-      return 0;
-      // if an actual hash collision has occured
+			if (!override) {
+				printf("[DEBUG]HashMap: No duplicate keys allowed\n");
+				return 0;
+			}
+			else if (override) {
+				strcpy(tableEntry->value, value);
+				//dont need the newNode anymore
+				free(newNode);
+				return 1;
+			}
+			// if not same key, then a hash collision actually occured, so extend the doubly linked list
     } else {
       // if tableEntry->next == NULL, that means that is the last element
       while (tableEntry->next != NULL)

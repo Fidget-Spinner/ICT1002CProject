@@ -46,42 +46,7 @@
 #include "chat1002.h"
 #include "HashMap.h"
 
-
- /*
-  * Helper function for answering questions. Required by chatbot_do_question.
-  *
-  * inv[0] contains the the question word.
-  * inv[1] may contain "is" or "are"; if so, it is skipped.
-  * The remainder of the words form the entity.
-  *
-  * This function retrieves a value from the hashmap corresponding to the intent.
-  */
-void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, char questionEntityPtr[]);
-
- /*
-  * Get the name of the chatbot.
-  *
-  * Returns: the name of the chatbot as a null-terminated string
-  */
-const char* chatbot_botname() {
-
-	return "Chatbot";
-
-}
-
-
-/*
- * Get the name of the user.
- *
- * Returns: the name of the user as a null-terminated string
- */
-const char* chatbot_username() {
-
-	return "User";
-
-}
-
-/* Just the hard coded base small talk responses. 
+/* Just the hard coded base small talk responses.
 */
 typedef struct {
 	char* intent;
@@ -110,6 +75,61 @@ record KnowledgeBase[] = {
 	}
 };
 
+/*
+* Helper function for answering questions. Required by chatbot_do_question.
+*
+* inv[0] contains the the question word.
+* inv[1] may contain "is" or "are"; if so, it is skipped.
+* The remainder of the words form the entity.
+*
+* This function retrieves a value from the hashmap corresponding to the intent.
+*/
+void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, char questionEntityPtr[]);
+
+/*
+* Utility function to give an appropiate reponse to KB errors
+*  @param kb_status: Either KB_OK, KB_NOTFOUND, KB_INVALID or KB_NOMEM
+*  @param response: the buffer to receive the response
+*  @param n : the maximum number of characters to write to the response buffer
+*  @param what_to_respond: the string to write to response if KB_OK
+*/
+void respond_kb_errors(int kb_status, char* response, int n, char *what_to_respond) {
+	switch (kb_status) {
+	case KB_OK:
+		_snprintf(response, n, what_to_respond);
+		break;
+	case KB_INVALID:
+		snprintf(response, n, "Invalid knowledge base");
+		break;
+	case KB_NOMEM:
+		_snprintf(response, n, "I've run out of memory");
+	case KB_NOTFOUND:
+		_snprintf(response, n, "I can't find that knowledge base");
+	}
+}
+
+ /*
+  * Get the name of the chatbot.
+  *
+  * Returns: the name of the chatbot as a null-terminated string
+  */
+const char* chatbot_botname() {
+
+	return "Chatbot";
+
+}
+
+
+/*
+ * Get the name of the user.
+ *
+ * Returns: the name of the user as a null-terminated string
+ */
+const char* chatbot_username() {
+
+	return "User";
+
+}
 
 
 /*
@@ -214,12 +234,16 @@ int chatbot_is_load(const char* intent) {
  */
 int chatbot_do_load(int inc, char* inv[], char* response, int n) {
 	FILE* f;
+	int index = 1;
 	if (inv[1] == "" || inv[1] == NULL)
 	{
 		snprintf(response, n, "Error missing filename!");
 	}
 	else {
-		f = fopen(inv[1], "r");
+		if (compare_token(inv[1], "from") == 0) { // check for the "from" and ignore it
+			index = 2;
+		}
+		f = fopen(inv[index], "r");
 		if (knowledge_read(f) == 0) //Test for error reading
 		{
 			snprintf(response, n, "Successfully loaded!");
@@ -283,32 +307,14 @@ void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, cha
 		}
 		if (compare_token(inv[1], "are") == 0 || compare_token(inv[1], "is") == 0) //check for is and are
 		{
-
 			for (int b = 2; b < inc; b++)
 			{
+				strcat(questionEntityPtr, inv[b]); //store input entity 
 				if (inv[b + 1] != NULL)
-				{
-					strcat(questionEntityPtr, inv[b]); //store input entity 
 					strcat(questionEntityPtr, " "); //check for space and insert space
-				}
-				else
-				{
-					strcat(questionEntityPtr, inv[b]); //store input entity 
-				}
 			}
 			KB_STATUS = knowledge_get(inv[0], questionEntityPtr, responseBuf, n);
-			switch (KB_STATUS) {
-				case KB_OK:
-					snprintf(response, n, responseBuf);
-					break;
-				case KB_NOTFOUND:
-					snprintf(response, n, "Question not found! Please tell me a response!"); // Question Not Found, Run write Function here
-					break;
-				case KB_INVALID:
-					printf("uwu");
-					snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
-					break;
-			}
+			respond_kb_errors(KB_STATUS, response, n, responseBuf);
 		}
 		else {
 			snprintf(response, n, "Please input a proper question!"); //If question is inproper, break

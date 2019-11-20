@@ -93,14 +93,12 @@ int compare_token(const char *token1, const char *token2) {
 			return 1;
 		i++;
 	}
-	
 	if (token1[i] == '\0' && token2[i] == '\0')
 		return 0;
 	else if (token1[i] == '\0')
 		return -1;
 	else
 		return 1;
-	
 }
 
 

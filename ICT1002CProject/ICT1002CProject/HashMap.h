@@ -21,7 +21,7 @@ typedef struct Data_Node DATA_NODE;
 * @param value The corresponding value to insert.
 * returns 1 if successful, 0 if fail
 */
-int insertHashEntry(DATA_NODE * hashMap[], char * key, char * value);
+int insertHashEntry(DATA_NODE* hashMap[], char* key, char* value, int override);
 
 /** Returns a pointer to the DATA_NODE in the hashmap if it finds the key, returns null if the key does not exist. Just like a python dictionary/JS object.
 * @param hashMap The hashMap to search through 

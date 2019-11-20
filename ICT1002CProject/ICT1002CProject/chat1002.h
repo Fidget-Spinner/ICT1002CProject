@@ -43,7 +43,7 @@ extern DATA_NODE* LoadKnowledgeWhoMap[SIZE_OF_HASHMAP];
 extern DATA_NODE* LoadKnowledgeWhereMap[SIZE_OF_HASHMAP];
 
 
-extern char LoadedKnowledge[MAX_ENTITY + 1 + MAX_RESPONSE + 1];
+//extern char LoadedKnowledge[MAX_ENTITY + 1 + MAX_RESPONSE + 1];
 
 /* functions defined in main.c */
 int compare_token(const char* token1, const char* token2);
@@ -66,6 +66,7 @@ int chatbot_is_save(const char* intent);
 int chatbot_do_save(int inc, char* inv[], char* response, int n);
 int chatbot_is_smalltalk(const char* intent);
 int chatbot_do_smalltalk(int inc, char* inv[], char* resonse, int n);
+void respond_kb_errors(int kb_status, char* response, int n, char* what_to_respond);
 
 /* functions defined in knowledge.c */
 int knowledge_get(const char* intent, const char* entity, char* response, int n);

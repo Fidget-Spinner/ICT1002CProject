@@ -23,9 +23,10 @@
 DATA_NODE* LoadKnowledgeWhatMap[SIZE_OF_HASHMAP] = { NULL };
 DATA_NODE* LoadKnowledgeWhoMap[SIZE_OF_HASHMAP] = { NULL };
 DATA_NODE* LoadKnowledgeWhereMap[SIZE_OF_HASHMAP] = { NULL };
-char LoadedKnowledge[MAX_ENTITY + 1 + MAX_RESPONSE + 1];
 
- /*
+
+
+/*
   * Get the response to a question.
   *
   * Input:
@@ -78,11 +79,20 @@ int knowledge_get(const char* intent, const char* entity, char* response, int n)
  *   KB_INVALID, if the intent is not a valid question word
  */
 int knowledge_put(const char* intent, const char* entity, const char* response) {
+	DATA_NODE** hashMapToSearch = NULL;
+	if (compare_token(intent, "who") == 0)
+		hashMapToSearch = LoadKnowledgeWhoMap;
+	else if (compare_token(intent, "what") == 0)
+		hashMapToSearch = LoadKnowledgeWhatMap;
+	else if (compare_token(intent, "where") == 0)
+		hashMapToSearch = LoadKnowledgeWhereMap;
+	if (hashMapToSearch == NULL) //Check for intent
+		return KB_INVALID;
 
-	/* to be implemented */
-
-	return KB_INVALID;
-
+	if (insertHashEntry(hashMapToSearch, entity, response, 1))
+		return KB_OK;
+	else
+		return KB_NOMEM;
 }
 
 
@@ -95,6 +105,8 @@ int knowledge_put(const char* intent, const char* entity, const char* response) 
  * Returns: the number of entity/response pairs successful read from the file
  */
 int knowledge_read(FILE* f) {
+	// just a temporary buffer to store a single line of file input
+	char LoadedKnowledge[MAX_ENTITY + 1 + MAX_RESPONSE + 1];
 	int i = 0;
 	int swap = 0;
 	int indexofknowledge = -1;;
@@ -137,21 +149,21 @@ int knowledge_read(FILE* f) {
 				case 0: // intent is "what"
 					key = strtok(LoadedKnowledge, "=");
 					value = strtok(NULL, "=");
-					insertHashEntry(LoadKnowledgeWhatMap, str_upper(key), value); // what hashmap
+					insertHashEntry(LoadKnowledgeWhatMap, str_upper(key), value, 0); // what hashmap
 					searchKeyGetValue(LoadKnowledgeWhatMap, key, testBuf); //Only for testing purposes
 					printf("%s\n", testBuf); //Only for testing purposes
 					break;
 				case 1: // intent is "who"
 					key = strtok(LoadedKnowledge, "=");
 					value = strtok(NULL, "=");
-					insertHashEntry(LoadKnowledgeWhoMap, str_upper(key), value); // who hashmap
+					insertHashEntry(LoadKnowledgeWhoMap, str_upper(key), value, 0); // who hashmap
 					searchKeyGetValue(LoadKnowledgeWhoMap, key, testBuf); //Only for testing purposes
 					printf("%s\n", testBuf); //Only for testing purposes
 					break;
 				case 2: // intent is "where"
 					key = strtok(LoadedKnowledge, "=");
 					value = strtok(NULL, "=");
-					insertHashEntry(LoadKnowledgeWhereMap, str_upper(key), value); // where hashmap
+					insertHashEntry(LoadKnowledgeWhereMap, str_upper(key), value, 0); // where hashmap
 					searchKeyGetValue(LoadKnowledgeWhereMap, key, testBuf); //Only for testing purposes
 					printf("%s\n", testBuf); //Only for testing purposes
 					break;			
@@ -168,11 +180,9 @@ int knowledge_read(FILE* f) {
  * Reset the knowledge base, removing all know entitities from all intents.
  */
 void knowledge_reset() {
-	memset(LoadedKnowledge, '\0', sizeof(LoadedKnowledge));
 	freeHashMap(LoadKnowledgeWhatMap);
 	freeHashMap(LoadKnowledgeWhereMap);
 	freeHashMap(LoadKnowledgeWhoMap);
-
 }
 
 
