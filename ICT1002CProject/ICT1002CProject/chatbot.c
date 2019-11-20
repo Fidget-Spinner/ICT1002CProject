@@ -239,15 +239,12 @@ int chatbot_is_load(const char* intent) {
  */
 int chatbot_do_load(int inc, char* inv[], char* response, int n) {
 	FILE* f;
-	int index = 1;
 	if (inv[1] == "" || inv[1] == NULL)
 	{
 		snprintf(response, n, "Error missing filename!");
 	}
 	else {
-		if (compare_token(inv[1], "from") == 0) { // check for the "from" and ignore it
-			index = 2;
-		}
+		int index = (compare_token(inv[1], "from") == 0) ? 2 : 1;  // check for the "from" and ignore it
 		f = fopen(inv[index], "r");
 		if (knowledge_read(f) == 0) //Test for error reading
 		{
@@ -390,15 +387,12 @@ int chatbot_is_save(const char* intent) {
  *   0 (the chatbot always continues chatting after saving knowledge)
  */
 int chatbot_do_save(int inc, char* inv[], char* response, int n) {
-	int index = 1;
 	if (inv[1] == "" || inv[1] == NULL)
 	{
 		snprintf(response, n, "Error missing filename!");
 	}
 	else {
-		if (compare_token(inv[index], "as") == 0 || compare_token(inv[index], "to") == 0 || compare_token(inv[index], "at") == 0) {
-			index = 2;
-		}
+		int index = (compare_token(inv[index], "as") == 0 || compare_token(inv[index], "to") == 0 || compare_token(inv[index], "at") == 0) ? 2 : 1; 
 		FILE* f = fopen(inv[index], "wb");
 		if (f) { // check for file errors
 			knowledge_write(f);
