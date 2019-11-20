@@ -101,7 +101,7 @@ int knowledge_put(const char* intent, const char* entity, const char* response) 
  * Input:
  *   f - the file
  *
- * Returns: the number of entity/response pairs successful read from the file
+ * Returns: error code
  */
 int knowledge_read(FILE* f) {
 	// just a temporary buffer to store a single line of file input

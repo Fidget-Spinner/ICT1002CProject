@@ -239,6 +239,8 @@ int chatbot_is_load(const char* intent) {
  */
 int chatbot_do_load(int inc, char* inv[], char* response, int n) {
 	FILE* f;
+	int index;
+	int err_code;
 	if (inv[1] == "" || inv[1] == NULL)
 	{
 		snprintf(response, n, "Error missing filename!");
@@ -246,15 +248,21 @@ int chatbot_do_load(int inc, char* inv[], char* response, int n) {
 	else {
 		int index = (compare_token(inv[1], "from") == 0) ? 2 : 1;  // check for the "from" and ignore it
 		f = fopen(inv[index], "r");
-		if (knowledge_read(f) == 0) //Test for error reading
-		{
-			snprintf(response, n, "Successfully loaded!");
+		if (f) {
+			err_code = knowledge_read(f);
+			if (err_code == 0) //Test for error reading
+			{
+				snprintf(response, n, "Successfully loaded!");
+			}
+			else if (knowledge_read(f) == 1)
+			{
+				snprintf(response, n, "Error reading file!");
+			}
+			fclose(f);
 		}
-		else if (knowledge_read(f) == 1)
-		{
-			snprintf(response, n, "Error opening file!");
+		else {
+			snprintf(response, n, "Error opening file! Check the name or the file permissions.");
 		}
-		fclose(f);
 	}
 	return 0;
 
@@ -387,12 +395,13 @@ int chatbot_is_save(const char* intent) {
  *   0 (the chatbot always continues chatting after saving knowledge)
  */
 int chatbot_do_save(int inc, char* inv[], char* response, int n) {
+	int index;
 	if (inv[1] == "" || inv[1] == NULL)
 	{
 		snprintf(response, n, "Error missing filename!");
 	}
 	else {
-		int index = (compare_token(inv[index], "as") == 0 || compare_token(inv[index], "to") == 0 || compare_token(inv[index], "at") == 0) ? 2 : 1; 
+		index = (compare_token(inv[1], "as") == 0 || compare_token(inv[1], "to") == 0 || compare_token(inv[1], "at") == 0) ? 2 : 1; 
 		FILE* f = fopen(inv[index], "wb");
 		if (f) { // check for file errors
 			knowledge_write(f);
