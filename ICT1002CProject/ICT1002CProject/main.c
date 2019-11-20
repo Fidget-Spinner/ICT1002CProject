@@ -16,12 +16,13 @@
 /* word delimiters */
 const char *delimiters = " ?\t\n";
  
- 
+/* global buffer for holding the unmodified user input */
+char user_input[MAX_INPUT];     
+
 /*
  * Main loop.
  */
 int main(int argc, char *argv[]) {
-
 	char input[MAX_INPUT];      /* buffer for holding the user input */
 	int inc;                    /* the number of words in the user input */
 	char *inv[MAX_INPUT];       /* pointers to the beginning of each word of input */
@@ -44,6 +45,7 @@ int main(int argc, char *argv[]) {
 			/* read the line */
 			printf("%s: ", chatbot_username());
 			fgets(input, MAX_INPUT, stdin);
+			strncpy(user_input, input, MAX_INPUT);
 			
 			/* split it into words */
 			inc = 0;

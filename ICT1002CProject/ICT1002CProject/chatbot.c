@@ -91,9 +91,10 @@ void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, cha
 *  @param kb_status: Either KB_OK, KB_NOTFOUND, KB_INVALID or KB_NOMEM
 *  @param response: the buffer to receive the response
 *  @param n : the maximum number of characters to write to the response buffer
-*  @param what_to_respond: the string to write to response if KB_OK
+*  @param what_to_respond: the string to write to response buffer if KB_OK
 */
-void respond_kb_errors(int kb_status, char* response, int n, char *what_to_respond) {
+void respond_kb_errors(int kb_status, int inc, char * inv[], char* response, int n, char *what_to_respond, char questionEntityPtr[]) {
+	char buf[MAX_LENGTH_USER_INPUT];
 	switch (kb_status) {
 	case KB_OK:
 		_snprintf(response, n, what_to_respond);
@@ -103,8 +104,12 @@ void respond_kb_errors(int kb_status, char* response, int n, char *what_to_respo
 		break;
 	case KB_NOMEM:
 		_snprintf(response, n, "I've run out of memory");
+		break;
 	case KB_NOTFOUND:
-		_snprintf(response, n, "I can't find that knowledge base");
+		prompt_user(buf, n, "%s%s", "I don't know. ", user_input);
+		knowledge_put(inv[0], questionEntityPtr, buf);
+		snprintf(response, n, "Thank you.");
+		break;
 	}
 }
 
@@ -314,7 +319,7 @@ void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, cha
 					strcat(questionEntityPtr, " "); //check for space and insert space
 			}
 			KB_STATUS = knowledge_get(inv[0], questionEntityPtr, responseBuf, n);
-			respond_kb_errors(KB_STATUS, response, n, responseBuf);
+			respond_kb_errors(KB_STATUS, inc, inv, response, n , responseBuf, questionEntityPtr);
 		}
 		else {
 			snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
