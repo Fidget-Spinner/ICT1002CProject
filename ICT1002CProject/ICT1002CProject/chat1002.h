@@ -9,6 +9,7 @@
 #define _CHAT1002_H
 
 #include <stdio.h>
+#include "HashMap.h"
 
  /* the maximum number of characters we expect in a line of input (including the terminating null)  */
 #define MAX_INPUT    256
@@ -28,23 +29,26 @@
 #define KB_INVALID  -2
 #define KB_NOMEM    -3
 
-/*Global storage for loaded ini content*/
-/*Edit it to use the SmallChat struct format*/
-typedef struct knowledgerecord {
-	char* entity;
-	char* responses; //To change amount of strings responses have
-}knowledgerecord;
+/** global hashmap settings **/
 
-knowledgerecord LoadKnowledgeWhat[255];
-knowledgerecord LoadKnowledgeWhere[255];
-knowledgerecord LoadKnowledgeWho[255];
+// the larger this value is, the faster the hashmap will be for extremely large number of inputs, however the tradeoff is that more RAM will be used
+#define SIZE_OF_HASHMAP 676 
+//max length of a key or value's chars
+#define MAX_LENGTH_USER_INPUT MAX_ENTITY + 1 + MAX_RESPONSE + 1 
 
 
-char LoadedKnowledge[255][255];
+// declaration of global variables
+extern DATA_NODE* LoadKnowledgeWhatMap[SIZE_OF_HASHMAP];
+extern DATA_NODE* LoadKnowledgeWhoMap[SIZE_OF_HASHMAP];
+extern DATA_NODE* LoadKnowledgeWhereMap[SIZE_OF_HASHMAP];
+
+
+extern char LoadedKnowledge[MAX_ENTITY + 1 + MAX_RESPONSE + 1];
 
 /* functions defined in main.c */
 int compare_token(const char* token1, const char* token2);
 void prompt_user(char* buf, int n, const char* format, ...);
+char* str_upper(char* str);
 
 /* functions defined in chatbot.c */
 const char* chatbot_botname();

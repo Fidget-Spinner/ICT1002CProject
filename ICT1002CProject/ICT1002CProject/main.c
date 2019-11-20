@@ -130,3 +130,24 @@ void prompt_user(char *buf, int n, const char *format, ...) {
 	if (nl != NULL)
 		*nl = '\0';
 }
+
+/*
+ * Utility function to convert all strings to upper case.
+ *
+ * Input:
+ *   str	- the string to convert to upper case
+ *
+ * Returns:
+ *   upper case version of the string
+ */
+char* str_upper(char* str)
+{
+	unsigned char* p = (unsigned char*)str;
+
+	while (*p) {
+		*p = toupper((unsigned char)*p);
+		p++;
+	}
+
+	return str;
+}

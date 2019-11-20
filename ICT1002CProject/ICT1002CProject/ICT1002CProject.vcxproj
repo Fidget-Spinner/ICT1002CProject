@@ -128,9 +128,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="chat1002.h" />
+    <ClInclude Include="HashMap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="chatbot.c" />
+    <ClCompile Include="HashMap.c" />
     <ClCompile Include="knowledge.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>

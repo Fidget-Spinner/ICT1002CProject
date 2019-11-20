@@ -16,8 +16,14 @@
 #include <stdio.h>
 #include <string.h>
 #include "chat1002.h"
-#include<Windows.h>;
+#include "HashMap.h"
 
+
+// definition of global variables
+DATA_NODE* LoadKnowledgeWhatMap[SIZE_OF_HASHMAP] = { NULL };
+DATA_NODE* LoadKnowledgeWhoMap[SIZE_OF_HASHMAP] = { NULL };
+DATA_NODE* LoadKnowledgeWhereMap[SIZE_OF_HASHMAP] = { NULL };
+char LoadedKnowledge[MAX_ENTITY + 1 + MAX_RESPONSE + 1];
 
  /*
   * Get the response to a question.
@@ -75,81 +81,74 @@ int knowledge_put(const char* intent, const char* entity, const char* response) 
  * Returns: the number of entity/response pairs successful read from the file
  */
 int knowledge_read(FILE* f) {
-
-
 	FILE* fptr;
-	/* to be implemented */
 	int i = 0;
-	int result;
 	int swap = 0;
 	int indexofknowledge = -1;;
 
+	char *key;
+	char *value;
+	char testBuf[MAX_ENTITY + 1 + MAX_RESPONSE + 1]; // only for testing purposes
 	fptr = fopen(f, "r");
 	if (fptr == NULL)
 	{
-		return result = 1;
+		printf("Could not open the file\n");
+		return 1;
 	}
-
-	while (fgets(LoadedKnowledge[i], 255, fptr) != NULL) //Loop through ini file and store content to global knowledge
+	while (fgets(LoadedKnowledge, MAX_ENTITY + 1 + MAX_RESPONSE + 1, fptr) != NULL) //Loop through ini file and store content to global knowledge
 	{
-		if (LoadedKnowledge[i][0] == '[')
+		if (LoadedKnowledge[0] == '[')
 		{
-			if (strcmp(strtok(LoadedKnowledge[i], "[]"), "what") == 0)
+			if (compare_token(strtok(LoadedKnowledge, "[]"), "what") == 0)
 			{
 				swap = 0;
 				indexofknowledge = -1;
 			}
-
-			else if (strcmp(strtok(LoadedKnowledge[i], "[]"), "who") == 0)
+			else if (compare_token(strtok(LoadedKnowledge, "[]"), "who") == 0)
 			{
 				swap = 1;
 				indexofknowledge = -1;
 			}
-
-			else if (strcmp(strtok(LoadedKnowledge[i], "[]"), "where") == 0)
+			else if (compare_token(strtok(LoadedKnowledge, "[]"), "where") == 0)
 			{
 				swap = 2;
 				indexofknowledge = -1;
 			}
 		}
-		else if (LoadedKnowledge[i][0] == '\n' || LoadedKnowledge[i] == "")
+		else if (LoadedKnowledge[0] == '\n' || LoadedKnowledge == "")
 		{
 			continue;
 		}
-		else if (strchr(LoadedKnowledge[i], '=') != NULL)
+		else if (strchr(LoadedKnowledge, '=') != NULL)
 		{
-			if (swap == 0) //what
-			{
-				LoadKnowledgeWhat[indexofknowledge].entity = strtok(LoadedKnowledge[i], "=");
-				LoadKnowledgeWhat[indexofknowledge].responses = strtok(NULL, "=");
-				//printf("%s\n", LoadKnowledgeWhat[indexofknowledge].entity); //Only for testing purposes
-				//printf("%s\n", LoadKnowledgeWhat[indexofknowledge].responses); //Only for testing purposes
-
-			}
-			else if (swap == 1) //who
-			{
-
-				LoadKnowledgeWho[indexofknowledge].entity = strtok(LoadedKnowledge[i], "=");
-				LoadKnowledgeWho[indexofknowledge].responses = strtok(NULL, "=");
-				//printf("%s\n", LoadKnowledgeWho[indexofknowledge].entity); //Only for testing purposes
-				//printf("%s\n", LoadKnowledgeWho[indexofknowledge].responses); //Only for testing purposes
-			}
-			else if (swap == 2) //where
-			{
-				LoadKnowledgeWhere[indexofknowledge].entity = strtok(LoadedKnowledge[i], "=");
-				LoadKnowledgeWhere[indexofknowledge].responses = strtok(NULL, "=");
-				//printf("%s\n", LoadKnowledgeWhere[indexofknowledge].entity); //Only for testing purposes
-				//printf("%s\n", LoadKnowledgeWhere[indexofknowledge].responses); //Only for testing purposes
+			switch (swap) {
+				case 0: // intent is "what"
+					key = strtok(LoadedKnowledge, "=");
+					value = strtok(NULL, "=");
+					insertHashEntry(LoadKnowledgeWhatMap, str_upper(key), value); // what hashmap
+					searchKeyGetValue(LoadKnowledgeWhatMap, key, testBuf); //Only for testing purposes
+					printf("%s\n", testBuf); //Only for testing purposes
+					break;
+				case 1: // intent is "who"
+					key = strtok(LoadedKnowledge, "=");
+					value = strtok(NULL, "=");
+					insertHashEntry(LoadKnowledgeWhoMap, str_upper(key), value); // who hashmap
+					searchKeyGetValue(LoadKnowledgeWhoMap, key, testBuf); //Only for testing purposes
+					printf("%s\n", testBuf); //Only for testing purposes
+					break;
+				case 2: // intent is "where"
+					key = strtok(LoadedKnowledge, "=");
+					value = strtok(NULL, "=");
+					insertHashEntry(LoadKnowledgeWhereMap, str_upper(key), value); // where hashmap
+					searchKeyGetValue(LoadKnowledgeWhereMap, key, testBuf); //Only for testing purposes
+					printf("%s\n", testBuf); //Only for testing purposes
+					break;			
 			}
 		}
-		i++;
 		indexofknowledge++;
 	}
-
 	fclose(fptr);
-
-
-	return result = 0;
+	return 0;
 }
 
 
@@ -158,9 +157,9 @@ int knowledge_read(FILE* f) {
  */
 void knowledge_reset() {
 	memset(LoadedKnowledge, '\0', sizeof(LoadedKnowledge));
-	memset(LoadKnowledgeWhat, '\0', sizeof(LoadKnowledgeWhat));
-	memset(LoadKnowledgeWhere, '\0', sizeof(LoadKnowledgeWhere));
-	memset(LoadKnowledgeWho, '\0', sizeof(LoadKnowledgeWho));
+	freeHashMap(LoadKnowledgeWhatMap);
+	freeHashMap(LoadKnowledgeWhereMap);
+	freeHashMap(LoadKnowledgeWhoMap);
 
 }
 

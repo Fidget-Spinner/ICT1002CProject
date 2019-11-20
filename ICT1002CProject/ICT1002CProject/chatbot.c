@@ -43,7 +43,19 @@
 #include <stdio.h>
 #include <string.h>
 #include "chat1002.h"
+#include "HashMap.h"
 
+
+ /*
+  * Helper function for answering questions. Required by chatbot_do_question.
+  *
+  * inv[0] contains the the question word.
+  * inv[1] may contain "is" or "are"; if so, it is skipped.
+  * The remainder of the words form the entity.
+  *
+  * This function retrieves a value from the hashmap corresponding to the intent.
+  */
+void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, char* questionEntityPtr[]);
 
  /*
   * Get the name of the chatbot.
@@ -147,8 +159,8 @@ int chatbot_main(int inc, char* inv[], char* response, int n) {
  *  0, otherwise
  */
 int chatbot_is_exit(const char* intent) {
-
-	return compare_token(intent, "exit") == 0 || compare_token(intent, "quit") == 0;
+	int result = compare_token(intent, "exit") == 0 || compare_token(intent, "quit") == 0;
+	return result;
 
 }
 
@@ -228,7 +240,6 @@ int chatbot_do_load(int inc, char* inv[], char* response, int n) {
  *  0, otherwise
  */
 int chatbot_is_question(const char* intent) {
-
 	return compare_token(intent, "what") == 0 || compare_token(intent, "where") == 0 || compare_token(intent, "who") == 0;
 
 }
@@ -249,162 +260,61 @@ int chatbot_is_question(const char* intent) {
  */
 int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 
-	char questionEntity[255] = ""; //Store entity of user input
-	char* questionEntityPtr = questionEntity;
+	char questionEntityPtr[255] = ""; //Store entity of user input
 
-	if (strcmp(inv[0], "what") == 0) //Check for intent
-	{
-		if (inv[1] == NULL)
-		{
-			snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
-		}
-		else if (strcmp(inv[1], "are") == 0 || strcmp(inv[1], "is") == 0) //check for is and are
-		{
-			if (inv[2] != NULL) {
-				for (int b = 2; b < inc; b++)
-				{
-					if (inv[b + 1] != NULL)
-					{
-						strcat(questionEntityPtr, inv[b]); //store input entity 
-						strcat(questionEntityPtr, " "); //check for space and insert space
-					}
-					else
-					{
-						strcat(questionEntityPtr, inv[b]); //store input entity 
-					}
-				}
-
-				for (int i = 0; i < sizeof(LoadKnowledgeWhat) / sizeof(LoadKnowledgeWhat[0]); i++) //loop through loaded knowledge
-				{
-					if (LoadKnowledgeWhat[i].entity != NULL) //break if null, if not will loop entire 255 array, resulting in error
-					{
-						if (strcmp(LoadKnowledgeWhat[i].entity, questionEntityPtr) == 0)
-						{
-							snprintf(response, n, LoadKnowledgeWhat[i].responses); //print response
-							questionEntityPtr = "";
-							break;
-						}
-
-					}
-					else {
-						snprintf(response, n, "Question not found! Please tell me a response!"); // Question Not Found, Run write Function here
-						break;
-					}
-				}
-			}
-			else {
-				snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
-			}
-		}
-		else {
-			snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
-		}
-	}
-	else if (strcmp(inv[0], "where") == 0) //Check for intent
-	{
-		if (inv[1] == NULL)
-		{
-			snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
-		}
-		else if (strcmp(inv[1], "are") == 0 || strcmp(inv[1], "is") == 0) //check for is and are
-		{
-			if (inv[2] != NULL) {
-				for (int b = 2; b < inc; b++)
-				{
-					if (inv[b + 1] != NULL)
-					{
-						strcat(questionEntityPtr, inv[b]); //store input entity 
-						strcat(questionEntityPtr, " "); //check for space and insert space
-					}
-					else
-					{
-						strcat(questionEntityPtr, inv[b]); //store input entity 
-					}
-				}
-
-				for (int i = 0; i < sizeof(LoadKnowledgeWhere) / sizeof(LoadKnowledgeWhere[0]); i++) //loop through loaded knowledge
-				{
-					if (LoadKnowledgeWhere[i].entity != NULL) //break if null, if not will loop entire 255 array, resulting in error
-					{
-						if (strcmp(LoadKnowledgeWhere[i].entity, questionEntityPtr) == 0)
-						{
-							snprintf(response, n, LoadKnowledgeWhere[i].responses); //print response		
-							questionEntityPtr = "";
-							break;
-						}
-
-					}
-					else {
-						snprintf(response, n, "Question not found! Please tell me a response!"); // Question Not Found, Run write Function here
-						break;
-					}
-				}
-			}
-			else {
-				snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
-			}
-		}
-		else {
-			snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
-		}
-	}
-	else if (strcmp(inv[0], "who") == 0) //Check for intent
-	{
-		if (inv[1] == NULL)
-		{
-			snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
-		}
-		else if (strcmp(inv[1], "are") == 0 || strcmp(inv[1], "is") == 0) //check for is and are
-		{
-			if (inv[2] != NULL) {
-				for (int b = 2; b < inc; b++)
-				{
-					if (inv[b + 1] != NULL)
-					{
-						strcat(questionEntityPtr, inv[b]); //store input entity 
-						strcat(questionEntityPtr, " "); //check for space and insert space
-					}
-					else
-					{
-						strcat(questionEntityPtr, inv[b]); //store input entity 
-					}
-				}
-
-				for (int i = 0; i < sizeof(LoadKnowledgeWho) / sizeof(LoadKnowledgeWho[0]); i++) //loop through loaded knowledge
-				{
-					if (LoadKnowledgeWho[i].entity != NULL) //break if null, if not will loop entire 255 array, resulting in error
-					{
-						if (strcmp(LoadKnowledgeWho[i].entity, questionEntityPtr) == 0)
-						{
-							snprintf(response, n, LoadKnowledgeWho[i].responses); //print response		
-							questionEntityPtr = "";
-							break;
-						}
-
-					}
-					else {
-						snprintf(response, n, "I don't know.  Please tell me a response!"); // Question Not Found, Run write Function here
-						break;
-					}
-				}
-			}
-			else {
-				snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
-			}
-		}
-		else {
-			snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
-		}
-	}
-	else {
-		snprintf(response, n, "I dont understand \"%s\"", inv[0]); //If question is inproper, break
-	}
-
+	chatbot_do_question_helper(inc, inv, response, n, questionEntityPtr);
 	return 0;
 
 }
 
+void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, char *questionEntityPtr[]) {
+	DATA_NODE* hashMapToSearch = NULL;
+	char responseBuf[MAX_LENGTH_USER_INPUT];
+	if (compare_token(inv[0], "who") == 0)
+		hashMapToSearch = LoadKnowledgeWhoMap;
+	else if (compare_token(inv[0], "what") == 0)
+		hashMapToSearch = LoadKnowledgeWhatMap;
+	else if (compare_token(inv[0], "where") == 0)
+		hashMapToSearch = LoadKnowledgeWhereMap;
+	if (hashMapToSearch != NULL) //Check for intent
+	{
+		if (inv[1] == NULL)
+		{
+			snprintf(response, n, "Please input a proper question!"); //If question is improper, break
+			return;
+		}
+		if (compare_token(inv[1], "are") == 0|| compare_token(inv[1], "is") == 0) //check for is and are
+		{
+			if (inv[2] != NULL) {
+				for (int b = 2; b < inc; b++)
+				{
+					if (inv[b + 1] != NULL)
+					{
+						strcat(questionEntityPtr, inv[b]); //store input entity 
+						strcat(questionEntityPtr, " "); //check for space and insert space
+					}
+					else
+					{
+						strcat(questionEntityPtr, inv[b]); //store input entity 
+					}
+				}
 
+				if (searchKeyGetValue(hashMapToSearch, str_upper(questionEntityPtr), responseBuf)) {
+					snprintf(response, n, responseBuf);
+				}
+				else {
+					snprintf(response, n, "Question not found! Please tell me a response!"); // Question Not Found, Run write Function here
+				}
+			}
+			else {
+				snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
+			}
+		}
+		else {
+			snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
+		}
+	}
+}
 /*
  * Determine whether an intent is RESET.
  *
