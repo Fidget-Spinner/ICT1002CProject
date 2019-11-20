@@ -9,13 +9,6 @@
 #include "chat1002.h"
 
 
-// doubly linked list struct, used for the hash table elements
-struct Data_Node{
-  char key[MAX_LENGTH_USER_INPUT + 2];
-  char value[MAX_LENGTH_USER_INPUT + 2]; 
-  struct Data_Node *next;
-  struct Data_Node *prev;
-} ;
 
 /** Returns a value (str pointer) in the hashmap given a key to search, returns null if the key does not exist.
 * @param hashMap The hashMap to search through 
@@ -32,13 +25,13 @@ DATA_NODE * searchKeyGetValue(DATA_NODE * hashMap[], char * key, char buf[MAX_LE
       tableEntry = tableEntry->next;
     } else {
       // once found, return the value
-      printf("[DEBUG]HashMap: Found Value: '%s', Key:'%s'\n", tableEntry->value, key);
+      //printf("[DEBUG]HashMap: Found Value: '%s', Key:'%s'\n", tableEntry->value, key);
       strncpy(buf, tableEntry->value, MAX_LENGTH_USER_INPUT);
       return tableEntry;
     }
   }
   //if after exhausting the list and nothing found, return null
-  printf("[DEBUG]HashMap: Key does not exist in HashMap\n");
+  //printf("[DEBUG]HashMap: Key does not exist in HashMap\n");
   strncpy(buf, "", 2);
   return NULL;
 }
@@ -62,13 +55,13 @@ int insertHashEntry(DATA_NODE * hashMap[], char * key, char * value, int overrid
   if (tableEntry == NULL){
     hashMap[index] = newNode;
   } else {
-    printf("[DEBUG]HashMap: Hash Collision (this is usually normal)\n");
+    //printf("[DEBUG]HashMap: Hash Collision (this is usually normal)\n");
     // if something is there, then a collision might have occurred
     // checks if same key, if it is, then reject it since hashmaps cant have duplicate keys
 		// if override=1, then override that value
     if (strcmp(tableEntry->key, key) == 0 ){
 			if (!override) {
-				printf("[DEBUG]HashMap: No duplicate keys allowed\n");
+				//printf("[DEBUG]HashMap: No duplicate keys allowed\n");
 				return 0;
 			}
 			else if (override) {
@@ -111,7 +104,7 @@ int freeNode(DATA_NODE * hashMap[], char * key){
     free(foundNode);
     return 1;
   } else {
-    printf("[DEBUG]:HashMap The key-value pair was not deleted because it does not exist.\n");
+    //printf("[DEBUG]:HashMap The key-value pair was not deleted because it does not exist.\n");
     return 0;
   }
 }

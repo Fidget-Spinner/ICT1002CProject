@@ -9,8 +9,8 @@
 
 
 /** definitions/prototypes **/
-// doubly linked list struct, used for the hash table elements
 typedef struct Data_Node DATA_NODE;
+
 
 
 /** IMPORTANT FUNCTIONS TO USE HASHMAP **/

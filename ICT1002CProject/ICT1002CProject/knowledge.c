@@ -18,7 +18,6 @@
 #include "chat1002.h"
 #include "HashMap.h"
 
-
 // definition of global variables
 DATA_NODE* LoadKnowledgeWhatMap[SIZE_OF_HASHMAP] = { NULL };
 DATA_NODE* LoadKnowledgeWhoMap[SIZE_OF_HASHMAP] = { NULL };
@@ -151,27 +150,26 @@ int knowledge_read(FILE* f) {
 					value = strtok(NULL, "=");
 					insertHashEntry(LoadKnowledgeWhatMap, str_upper(key), value, 0); // what hashmap
 					searchKeyGetValue(LoadKnowledgeWhatMap, key, testBuf); //Only for testing purposes
-					printf("%s\n", testBuf); //Only for testing purposes
+					//printf("%s\n", testBuf); //Only for testing purposes
 					break;
 				case 1: // intent is "who"
 					key = strtok(LoadedKnowledge, "=");
 					value = strtok(NULL, "=");
 					insertHashEntry(LoadKnowledgeWhoMap, str_upper(key), value, 0); // who hashmap
 					searchKeyGetValue(LoadKnowledgeWhoMap, key, testBuf); //Only for testing purposes
-					printf("%s\n", testBuf); //Only for testing purposes
+					//printf("%s\n", testBuf); //Only for testing purposes
 					break;
 				case 2: // intent is "where"
 					key = strtok(LoadedKnowledge, "=");
 					value = strtok(NULL, "=");
 					insertHashEntry(LoadKnowledgeWhereMap, str_upper(key), value, 0); // where hashmap
 					searchKeyGetValue(LoadKnowledgeWhereMap, key, testBuf); //Only for testing purposes
-					printf("%s\n", testBuf); //Only for testing purposes
+					//printf("%s\n", testBuf); //Only for testing purposes
 					break;			
 			}
 		}
 		indexofknowledge++;
 	}
-	fclose(f);
 	return 0;
 }
 
@@ -185,6 +183,28 @@ void knowledge_reset() {
 	freeHashMap(LoadKnowledgeWhoMap);
 }
 
+/* Internal helper function to knowledge_write
+ * Write the knowledge base to a file.
+ *
+ * Input:
+ *	 hashMap - the hashmap to write to the file
+ *   f - the file
+ */
+void knowledge_write_helper(DATA_NODE* hashMap[], FILE* f) {
+	DATA_NODE* currentNodePtr = NULL;
+	for (int i = 0; i < SIZE_OF_HASHMAP; i++) {
+		if (currentNodePtr = hashMap[i]) {  //if currentNodePtr is not pointing to an empty node
+			// write the whole linked list out
+			while (currentNodePtr != NULL) {
+				fputs(currentNodePtr->key, f);
+				fputc('=', f);
+				fputs(currentNodePtr->value, f);
+				fputc('\n', f);
+				currentNodePtr = currentNodePtr->next;
+			}
+		}
+	}
+}
 
 /*
  * Write the knowledge base to a file.
@@ -193,7 +213,11 @@ void knowledge_reset() {
  *   f - the file
  */
 void knowledge_write(FILE* f) {
-
-	/* to be implemented */
-
+	fputs("[what]\n", f);
+	knowledge_write_helper(LoadKnowledgeWhatMap, f);
+	fputs("[where]\n", f);
+	knowledge_write_helper(LoadKnowledgeWhereMap, f);
+	fputs("[who]\n", f);
+	knowledge_write_helper(LoadKnowledgeWhoMap, f);
 }
+

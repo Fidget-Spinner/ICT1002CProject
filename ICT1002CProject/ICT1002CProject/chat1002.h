@@ -36,15 +36,24 @@
 //max length of a key or value's chars
 #define MAX_LENGTH_USER_INPUT MAX_ENTITY + 1 + MAX_RESPONSE + 1 
 
+// doubly linked list struct, used for the hash table elements
+struct Data_Node {
+	char key[MAX_LENGTH_USER_INPUT + 2];
+	char value[MAX_LENGTH_USER_INPUT + 2];
+	struct Data_Node* next;
+	struct Data_Node* prev;
+};
+
 
 // declaration of global variables
 extern DATA_NODE* LoadKnowledgeWhatMap[SIZE_OF_HASHMAP];
 extern DATA_NODE* LoadKnowledgeWhoMap[SIZE_OF_HASHMAP];
 extern DATA_NODE* LoadKnowledgeWhereMap[SIZE_OF_HASHMAP];
 /* global buffer for holding the unmodified user input */
+
 extern char user_input[MAX_INPUT];      
 
-//extern char LoadedKnowledge[MAX_ENTITY + 1 + MAX_RESPONSE + 1];
+
 
 /* functions defined in main.c */
 int compare_token(const char* token1, const char* token2);

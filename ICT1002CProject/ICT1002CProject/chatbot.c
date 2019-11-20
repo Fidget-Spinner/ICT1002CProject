@@ -257,8 +257,8 @@ int chatbot_do_load(int inc, char* inv[], char* response, int n) {
 		{
 			snprintf(response, n, "Error opening file!");
 		}
+		fclose(f);
 	}
-
 	return 0;
 
 }
@@ -369,14 +369,12 @@ int chatbot_do_reset(int inc, char* inv[], char* response, int n) {
  *  intent - the intent
  *
  * Returns:
- *  1, if the intent is "what", "where", or "who"
+ *  1, if the intent is "save"
  *  0, otherwise
  */
 int chatbot_is_save(const char* intent) {
 
-	/* to be implemented */
-
-	return 0;
+	return compare_token(intent, "save") == 0;
 
 }
 
@@ -387,12 +385,38 @@ int chatbot_is_save(const char* intent) {
  * See the comment at the top of the file for a description of how this
  * function is used.
  *
+ * Ignores "as" "to" or "at" at the second word
  * Returns:
  *   0 (the chatbot always continues chatting after saving knowledge)
  */
 int chatbot_do_save(int inc, char* inv[], char* response, int n) {
-
-	/* to be implemented */
+	int index = 1;
+	if (inv[1] == "" || inv[1] == NULL)
+	{
+		snprintf(response, n, "Error missing filename!");
+	}
+	else {
+		if (compare_token(inv[index], "as") == 0 || compare_token(inv[index], "to") == 0 || compare_token(inv[index], "at") == 0) {
+			index = 2;
+		}
+		FILE* f = fopen(inv[index], "wb");
+		if (f) { // check for file errors
+			knowledge_write(f);
+		}
+		else {
+			snprintf(response, n, "%s %s", "Could not create/open file with the name", inv[index]);
+			return 0;
+		}
+		
+		if (ferror(f)) {
+			snprintf(response, n, "%s %s", "Could not save to", inv[index]);
+			return 0;
+		}
+		else {
+			snprintf(response, n, "%s %s", "My knowledge has been saved to", inv[index]);
+		}
+		fclose(f);
+	}
 
 	return 0;
 
