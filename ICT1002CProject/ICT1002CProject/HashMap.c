@@ -147,7 +147,7 @@ DATA_NODE * createNode(char * key, char * value){
 * @param strToHash The string to hash.
 * returns the hash value of the string
 */
-unsigned long hash(char * strToHash){
+unsigned long hash(const char * strToHash){
   unsigned long hash = 5381;
   int c;
   while ((c = *strToHash++))

@@ -48,7 +48,7 @@ extern char LoadedKnowledge[MAX_ENTITY + 1 + MAX_RESPONSE + 1];
 /* functions defined in main.c */
 int compare_token(const char* token1, const char* token2);
 void prompt_user(char* buf, int n, const char* format, ...);
-char* str_upper(char* str);
+char* str_upper(const char* str);
 
 /* functions defined in chatbot.c */
 const char* chatbot_botname();

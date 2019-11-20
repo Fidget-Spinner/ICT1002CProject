@@ -42,6 +42,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "chat1002.h"
 #include "HashMap.h"
 
@@ -55,7 +56,7 @@
   *
   * This function retrieves a value from the hashmap corresponding to the intent.
   */
-void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, char* questionEntityPtr[]);
+void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, char questionEntityPtr[]);
 
  /*
   * Get the name of the chatbot.
@@ -80,6 +81,8 @@ const char* chatbot_username() {
 
 }
 
+/* Just the hard coded base small talk responses. 
+*/
 typedef struct {
 	char* intent;
 	char* responses[3]; //To change amount of strings responses have
@@ -210,16 +213,18 @@ int chatbot_is_load(const char* intent) {
  *   0 (the chatbot always continues chatting after loading knowledge)
  */
 int chatbot_do_load(int inc, char* inv[], char* response, int n) {
+	FILE* f;
 	if (inv[1] == "" || inv[1] == NULL)
 	{
 		snprintf(response, n, "Error missing filename!");
 	}
 	else {
-		if (knowledge_read(inv[1]) == 0) //Test for error reading
+		f = fopen(inv[1], "r");
+		if (knowledge_read(f) == 0) //Test for error reading
 		{
 			snprintf(response, n, "Successfully loaded!");
 		}
-		else if (knowledge_read(inv[1]) == 1)
+		else if (knowledge_read(f) == 1)
 		{
 			snprintf(response, n, "Error opening file!");
 		}
@@ -267,54 +272,49 @@ int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 
 }
 
-void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, char *questionEntityPtr[]) {
+void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, char questionEntityPtr[]) {
 	DATA_NODE* hashMapToSearch = NULL;
 	char responseBuf[MAX_LENGTH_USER_INPUT];
-	if (compare_token(inv[0], "who") == 0)
-		hashMapToSearch = LoadKnowledgeWhoMap;
-	else if (compare_token(inv[0], "what") == 0)
-		hashMapToSearch = LoadKnowledgeWhatMap;
-	else if (compare_token(inv[0], "where") == 0)
-		hashMapToSearch = LoadKnowledgeWhereMap;
-	if (hashMapToSearch != NULL) //Check for intent
-	{
+	int KB_STATUS;
 		if (inv[1] == NULL)
 		{
 			snprintf(response, n, "Please input a proper question!"); //If question is improper, break
 			return;
 		}
-		if (compare_token(inv[1], "are") == 0|| compare_token(inv[1], "is") == 0) //check for is and are
+		if (compare_token(inv[1], "are") == 0 || compare_token(inv[1], "is") == 0) //check for is and are
 		{
-			if (inv[2] != NULL) {
-				for (int b = 2; b < inc; b++)
-				{
-					if (inv[b + 1] != NULL)
-					{
-						strcat(questionEntityPtr, inv[b]); //store input entity 
-						strcat(questionEntityPtr, " "); //check for space and insert space
-					}
-					else
-					{
-						strcat(questionEntityPtr, inv[b]); //store input entity 
-					}
-				}
 
-				if (searchKeyGetValue(hashMapToSearch, str_upper(questionEntityPtr), responseBuf)) {
-					snprintf(response, n, responseBuf);
+			for (int b = 2; b < inc; b++)
+			{
+				if (inv[b + 1] != NULL)
+				{
+					strcat(questionEntityPtr, inv[b]); //store input entity 
+					strcat(questionEntityPtr, " "); //check for space and insert space
 				}
-				else {
-					snprintf(response, n, "Question not found! Please tell me a response!"); // Question Not Found, Run write Function here
+				else
+				{
+					strcat(questionEntityPtr, inv[b]); //store input entity 
 				}
 			}
-			else {
-				snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
+			KB_STATUS = knowledge_get(inv[0], questionEntityPtr, responseBuf, n);
+			switch (KB_STATUS) {
+				case KB_OK:
+					snprintf(response, n, responseBuf);
+					break;
+				case KB_NOTFOUND:
+					snprintf(response, n, "Question not found! Please tell me a response!"); // Question Not Found, Run write Function here
+					break;
+				case KB_INVALID:
+					printf("uwu");
+					snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
+					break;
 			}
 		}
 		else {
 			snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
 		}
 	}
-}
+
 /*
  * Determine whether an intent is RESET.
  *
@@ -420,7 +420,7 @@ int chatbot_do_smalltalk(int inc, char* inv[], char* response, int n) {
 	char* smalltalkoutput;
 	int r = rand() % 3;
 	for (int i = 0; i < sizeof(KnowledgeBase) / sizeof(KnowledgeBase[0]); ++i) {
-		if (strcmp(KnowledgeBase[i].intent, inv[0]) == 0) {
+		if (compare_token(KnowledgeBase[i].intent, inv[0]) == 0) {
 			int r = rand() % 3; //Random number from 0-2 for random response.
 			smalltalkoutput = KnowledgeBase[i].responses[r];
 			snprintf(response, n, smalltalkoutput);

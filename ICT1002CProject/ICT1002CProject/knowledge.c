@@ -41,8 +41,22 @@ char LoadedKnowledge[MAX_ENTITY + 1 + MAX_RESPONSE + 1];
   */
 int knowledge_get(const char* intent, const char* entity, char* response, int n) {
 
-	/* to be implemented */
-
+	DATA_NODE ** hashMapToSearch = NULL;
+	if (compare_token(intent, "who") == 0)
+		hashMapToSearch = LoadKnowledgeWhoMap;
+	else if (compare_token(intent, "what") == 0)
+		hashMapToSearch = LoadKnowledgeWhatMap;
+	else if (compare_token(intent, "where") == 0)
+		hashMapToSearch = LoadKnowledgeWhereMap;
+	if (hashMapToSearch == NULL) //Check for intent
+		return KB_INVALID;
+	if (entity == NULL)
+	{
+		return KB_INVALID;
+	}
+	if (searchKeyGetValue(hashMapToSearch, str_upper(entity), response)) {
+		return KB_OK;
+	}
 	return KB_NOTFOUND;
 
 }
@@ -81,7 +95,6 @@ int knowledge_put(const char* intent, const char* entity, const char* response) 
  * Returns: the number of entity/response pairs successful read from the file
  */
 int knowledge_read(FILE* f) {
-	FILE* fptr;
 	int i = 0;
 	int swap = 0;
 	int indexofknowledge = -1;;
@@ -89,13 +102,12 @@ int knowledge_read(FILE* f) {
 	char *key;
 	char *value;
 	char testBuf[MAX_ENTITY + 1 + MAX_RESPONSE + 1]; // only for testing purposes
-	fptr = fopen(f, "r");
-	if (fptr == NULL)
+	if (f == NULL)
 	{
 		printf("Could not open the file\n");
 		return 1;
 	}
-	while (fgets(LoadedKnowledge, MAX_ENTITY + 1 + MAX_RESPONSE + 1, fptr) != NULL) //Loop through ini file and store content to global knowledge
+	while (fgets(LoadedKnowledge, MAX_ENTITY + 1 + MAX_RESPONSE + 1, f) != NULL) //Loop through ini file and store content to global knowledge
 	{
 		if (LoadedKnowledge[0] == '[')
 		{
@@ -147,7 +159,7 @@ int knowledge_read(FILE* f) {
 		}
 		indexofknowledge++;
 	}
-	fclose(fptr);
+	fclose(f);
 	return 0;
 }
 
