@@ -239,7 +239,6 @@ int chatbot_is_load(const char* intent) {
  */
 int chatbot_do_load(int inc, char* inv[], char* response, int n) {
 	FILE* f;
-	int index;
 	int err_code;
 	if (inv[1] == "" || inv[1] == NULL)
 	{

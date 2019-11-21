@@ -58,7 +58,7 @@ extern char user_input[MAX_INPUT];
 /* functions defined in main.c */
 int compare_token(const char* token1, const char* token2);
 void prompt_user(char* buf, int n, const char* format, ...);
-char* str_upper(const char* str);
+char* str_upper(char* str);
 
 /* functions defined in chatbot.c */
 const char* chatbot_botname();

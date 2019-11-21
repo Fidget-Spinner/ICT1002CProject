@@ -140,7 +140,7 @@ void prompt_user(char *buf, int n, const char *format, ...) {
  * Returns:
  *   upper case version of the string
  */
-char* str_upper(const char* str)
+char* str_upper(char* str)
 {
 	unsigned char* p = (unsigned char*)str;
 

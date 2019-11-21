@@ -16,12 +16,14 @@
 * @param buf The buffer to write the found value (or empty string) to
 * returns the pointer to the DATA_NODE if found, null otherwise
 */
-DATA_NODE * searchKeyGetValue(DATA_NODE * hashMap[], char * key, char buf[MAX_LENGTH_USER_INPUT + 2]){
+DATA_NODE * searchKeyGetValue(DATA_NODE * hashMap[], const char * key, char buf[MAX_LENGTH_USER_INPUT + 2]){
   unsigned long index = hash(key);
+  char tempBuf[MAX_LENGTH_USER_INPUT];
+  strcpy(tempBuf, key); // use tempBuf to store the key since key is const
   DATA_NODE *tableEntry = hashMap[index];
   while (tableEntry != NULL){
     // if the keys dont match, just go down the linked list and search
-    if (strcmp(tableEntry->key, key) != 0){
+    if (strcmp(tableEntry->key, str_upper(tempBuf)) != 0){
       tableEntry = tableEntry->next;
     } else {
       // once found, return the value
@@ -32,7 +34,7 @@ DATA_NODE * searchKeyGetValue(DATA_NODE * hashMap[], char * key, char buf[MAX_LE
   }
   //if after exhausting the list and nothing found, return null
   //printf("[DEBUG]HashMap: Key does not exist in HashMap\n");
-  strncpy(buf, "", 2);
+  //strncpy(buf, "", 2);
   return NULL;
 }
 
@@ -43,10 +45,15 @@ DATA_NODE * searchKeyGetValue(DATA_NODE * hashMap[], char * key, char buf[MAX_LE
 * @param override Whether to override the current key-value pair 1 is true, 0 is false.
 * returns 1 if successful, 0 if failed
 */
-int insertHashEntry(DATA_NODE * hashMap[], char * key, char * value, int override){
+int insertHashEntry(DATA_NODE * hashMap[], const char * key, const char * value, int override){
   unsigned long index = hash(key);
+  char tempBuf[MAX_LENGTH_USER_INPUT];
+  strcpy(tempBuf, key); // use tempBuf to store the key since key is const
+  char tempValueBuf[MAX_LENGTH_USER_INPUT];
+  strcpy(tempValueBuf, value); // use tempBuf to store the value since value is const
   DATA_NODE *tableEntry = hashMap[index];
-  DATA_NODE *newNode = createNode(key, value);
+  DATA_NODE *newNode = createNode(str_upper(tempBuf), tempValueBuf);
+
   // check if out of memory
   if (newNode == NULL){
     return 0;
@@ -59,13 +66,13 @@ int insertHashEntry(DATA_NODE * hashMap[], char * key, char * value, int overrid
     // if something is there, then a collision might have occurred
     // checks if same key, if it is, then reject it since hashmaps cant have duplicate keys
 		// if override=1, then override that value
-    if (strcmp(tableEntry->key, key) == 0 ){
+    if (strcmp(tableEntry->key, str_upper(tempBuf)) == 0 ){
 			if (!override) {
 				//printf("[DEBUG]HashMap: No duplicate keys allowed\n");
 				return 0;
 			}
 			else if (override) {
-				strcpy(tableEntry->value, value);
+				strcpy(tableEntry->value, tempValueBuf);
 				//dont need the newNode anymore
 				free(newNode);
 				return 1;
@@ -88,7 +95,7 @@ int insertHashEntry(DATA_NODE * hashMap[], char * key, char * value, int overrid
 * @param key The key of the node to delete.
 * returns 1 if successful, 0 if failed
 */
-int freeNode(DATA_NODE * hashMap[], char * key){
+int freeNode(DATA_NODE * hashMap[], const char * key){
   char uselessBuf[MAX_LENGTH_USER_INPUT + 2];
   DATA_NODE * foundNode = searchKeyGetValue(hashMap, key, uselessBuf);
   DATA_NODE * prevNode;
@@ -133,7 +140,7 @@ void freeHashMap(DATA_NODE * hashMap[]){
 * @param value The corresponding value of the node.
 * returns: The new DATA_NODE created.
 */
-DATA_NODE * createNode(char * key, char * value){
+DATA_NODE * createNode(const char * key, const char * value){
   DATA_NODE * newNodePtr = (DATA_NODE *)malloc(sizeof(DATA_NODE));
   if (newNodePtr){
     strncpy(newNodePtr->value, value, MAX_LENGTH_USER_INPUT);

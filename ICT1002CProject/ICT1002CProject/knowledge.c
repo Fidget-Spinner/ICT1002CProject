@@ -54,7 +54,7 @@ int knowledge_get(const char* intent, const char* entity, char* response, int n)
 	{
 		return KB_INVALID;
 	}
-	if (searchKeyGetValue(hashMapToSearch, str_upper(entity), response)) {
+	if (searchKeyGetValue(hashMapToSearch, entity, response)) {
 		return KB_OK;
 	}
 	return KB_NOTFOUND;
@@ -88,7 +88,7 @@ int knowledge_put(const char* intent, const char* entity, const char* response) 
 	if (hashMapToSearch == NULL) //Check for intent
 		return KB_INVALID;
 
-	if (insertHashEntry(hashMapToSearch, str_upper(entity), response, 1))
+	if (insertHashEntry(hashMapToSearch, entity, response, 1))
 		return KB_OK;
 	else
 		return KB_NOMEM;
