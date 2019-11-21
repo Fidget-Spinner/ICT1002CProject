@@ -199,7 +199,7 @@ void knowledge_write_helper(DATA_NODE* hashMap[], FILE* f) {
 				fputs(currentNodePtr->key, f);
 				fputc('=', f);
 				fputs(currentNodePtr->value, f);
-				fputc('\n', f);
+				//fputc('\n', f);
 				currentNodePtr = currentNodePtr->next;
 			}
 		}
