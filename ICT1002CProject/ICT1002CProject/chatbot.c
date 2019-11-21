@@ -97,13 +97,13 @@ void respond_kb_errors(int kb_status, int inc, char * inv[], char* response, int
 	char buf[MAX_LENGTH_USER_INPUT];
 	switch (kb_status) {
 	case KB_OK:
-		_snprintf(response, n, what_to_respond);
+		snprintf(response, n, what_to_respond);
 		break;
 	case KB_INVALID:
 		snprintf(response, n, "Invalid knowledge base");
 		break;
 	case KB_NOMEM:
-		_snprintf(response, n, "I've run out of memory");
+		snprintf(response, n, "I've run out of memory");
 		break;
 	case KB_NOTFOUND:
 		prompt_user(buf, n, "%s%s", "I don't know. ", user_input);
@@ -203,7 +203,7 @@ int chatbot_is_exit(const char* intent) {
  *   0 (the chatbot always continues chatting after a question)
  */
 int chatbot_do_exit(int inc, char* inv[], char* response, int n) {
-
+	knowledge_reset(); //reset knowledge first to free memory and prevent memory leaks
 	snprintf(response, n, "Goodbye!");
 
 	return 1;
@@ -358,7 +358,7 @@ int chatbot_is_reset(const char* intent) {
  */
 int chatbot_do_reset(int inc, char* inv[], char* response, int n) {
 
-	knowledge_reset();
+	knowledge_reset(); //reset knowledge to free memory and prevent memory leaks
 	snprintf(response, n, "Chatbot reset!");
 
 	return 0;
