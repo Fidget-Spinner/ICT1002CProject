@@ -112,7 +112,6 @@ int knowledge_read(FILE* f) {
 
 	char *key;
 	char *value;
-	char testBuf[MAX_ENTITY + 1 + MAX_RESPONSE + 1]; // only for testing purposes
 	if (f == NULL)
 	{
 		printf("Could not open the file\n");
@@ -144,27 +143,19 @@ int knowledge_read(FILE* f) {
 		}
 		else if (strchr(LoadedKnowledge, '=') != NULL)
 		{
+			key = strtok(LoadedKnowledge, "=");
+			value = strtok(NULL, "=");
+			removeTrailingNewLine(key);
+			removeTrailingNewLine(value);
 			switch (swap) {
 				case 0: // intent is "what"
-					key = strtok(LoadedKnowledge, "=");
-					value = strtok(NULL, "=");
 					insertHashEntry(LoadKnowledgeWhatMap, str_upper(key), value, 0); // what hashmap
-					searchKeyGetValue(LoadKnowledgeWhatMap, key, testBuf); //Only for testing purposes
-					//printf("%s\n", testBuf); //Only for testing purposes
 					break;
 				case 1: // intent is "who"
-					key = strtok(LoadedKnowledge, "=");
-					value = strtok(NULL, "=");
 					insertHashEntry(LoadKnowledgeWhoMap, str_upper(key), value, 0); // who hashmap
-					searchKeyGetValue(LoadKnowledgeWhoMap, key, testBuf); //Only for testing purposes
-					//printf("%s\n", testBuf); //Only for testing purposes
 					break;
 				case 2: // intent is "where"
-					key = strtok(LoadedKnowledge, "=");
-					value = strtok(NULL, "=");
 					insertHashEntry(LoadKnowledgeWhereMap, str_upper(key), value, 0); // where hashmap
-					searchKeyGetValue(LoadKnowledgeWhereMap, key, testBuf); //Only for testing purposes
-					//printf("%s\n", testBuf); //Only for testing purposes
 					break;			
 			}
 		}

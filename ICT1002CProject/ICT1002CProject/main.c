@@ -151,3 +151,12 @@ char* str_upper(char* str)
 
 	return str;
 }
+
+// Utility helper function; this just removes trailing \n from fgets, strchr searches for the \n character
+void removeTrailingNewLine(char buf[])
+{
+	char* end;
+	if ((end = strchr(buf, '\n')) != NULL) {
+		*end = '\00';
+	}
+};

@@ -59,6 +59,7 @@ extern char user_input[MAX_INPUT];
 int compare_token(const char* token1, const char* token2);
 void prompt_user(char* buf, int n, const char* format, ...);
 char* str_upper(char* str);
+void removeTrailingNewLine(char buf[]);
 
 /* functions defined in chatbot.c */
 const char* chatbot_botname();
