@@ -46,7 +46,8 @@ int main(int argc, char *argv[]) {
 			printf("%s: ", chatbot_username());
 			fgets(input, MAX_INPUT, stdin);
 			strncpy(user_input, input, MAX_INPUT);
-			
+			removeTrailingNewLine(user_input);
+
 			/* split it into words */
 			inc = 0;
 			inv[inc] = strtok(input, delimiters);
