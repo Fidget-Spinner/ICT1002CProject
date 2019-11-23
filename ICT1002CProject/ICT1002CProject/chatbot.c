@@ -318,7 +318,7 @@ void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, cha
 		{
 			for (int b = 2; b < inc; b++)
 			{
-				strcat(questionEntityPtr, inv[b]); //store input entity 
+				strcat(questionEntityPtr, str_upper(inv[b])); //store input entity 
 				if (inv[b + 1] != NULL)
 					strcat(questionEntityPtr, " "); //check for space and insert space
 			}
