@@ -69,6 +69,8 @@ int insertHashEntry(DATA_NODE * hashMap[], const char * key, const char * value,
     if (strcmp(tableEntry->key, str_upper(tempBuf)) == 0 ){
 			if (!override) {
 				//printf("[DEBUG]HashMap: No duplicate keys allowed\n");
+				//dont need the newNode anymore
+				free(newNode);
 				return 0;
 			}
 			else if (override) {
@@ -84,37 +86,11 @@ int insertHashEntry(DATA_NODE * hashMap[], const char * key, const char * value,
         tableEntry = tableEntry->next; // increment to last elmeent
       // append to last element
       tableEntry->next = newNode;
-      newNode->prev = tableEntry;
     } 
   }
   return 1;
 }
 
-/** Deletes a node from the HashMap and frees it.
-* @param hashMap The hashMap to delete from.
-* @param key The key of the node to delete.
-* returns 1 if successful, 0 if failed
-*/
-int freeNode(DATA_NODE * hashMap[], const char * key){
-  char uselessBuf[MAX_LENGTH_USER_INPUT + 2];
-  DATA_NODE * foundNode = searchKeyGetValue(hashMap, key, uselessBuf);
-  DATA_NODE * prevNode;
-  if (foundNode){
-    if (foundNode->prev != NULL){  // if the node found is not the first node
-      prevNode = foundNode->prev;
-      prevNode->next = foundNode->next;
-      if (foundNode->next) // if there is another node after foundNode
-        foundNode->next->prev = prevNode;
-    } else { // if the node found is the first node
-      hashMap[hash(key)] = foundNode->next;
-    }
-    free(foundNode);
-    return 1;
-  } else {
-    //printf("[DEBUG]:HashMap The key-value pair was not deleted because it does not exist.\n");
-    return 0;
-  }
-}
 
 // frees all nodes inside the hashMap: resets it to NULL array
 void freeHashMap(DATA_NODE * hashMap[]){
@@ -123,14 +99,14 @@ void freeHashMap(DATA_NODE * hashMap[]){
   for (int i=0; i<SIZE_OF_HASHMAP; i++){
     currentNode = hashMap[i];
     if (currentNode){
-      // sets that entry in the hash table to null
-      hashMap[i] = NULL;
       // loops through and frees the whole linkedlist
       while (currentNode != NULL){
         tmp = currentNode;
         currentNode = currentNode->next;
         free(tmp);
       }
+	  // sets that entry in the hash table to null
+	  hashMap[i] = NULL;
     }
   }
 }
@@ -146,7 +122,6 @@ DATA_NODE * createNode(const char * key, const char * value){
     strncpy(newNodePtr->value, value, MAX_LENGTH_USER_INPUT);
     strncpy(newNodePtr->key, key, MAX_LENGTH_USER_INPUT);
     newNodePtr->next = NULL;
-    newNodePtr->prev = NULL;
   } else {
     printf("Out of memory, cannot create new key-value pairs");
   }

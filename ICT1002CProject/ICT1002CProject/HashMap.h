@@ -1,5 +1,5 @@
 /* This hash map implementation uses an array index to correspond to hashes
-*  The array elements itself are a doubly linked list. Since that will help account for
+*  The array elements itself are a singly linked list. Since that will help account for
 *  hash collisions.
 */
 
@@ -37,12 +37,6 @@ void freeHashMap(DATA_NODE * hashMap[]);
 
 /** LESS IMPORTANT FUNCTIONS, NOT ALWAYS NECCESARY **/
 
-/** Deletes a node from the HashMap and frees it.
-* @param hashMap The hashMap to delete from.
-* @param key The key of the node to delete.
-* returns 1 if successful, 0 if failed
-*/
-int freeNode(DATA_NODE * hashMap[], const char * key);
 
 /** Helper function to create a node given a key-value pair.
 * @param key The key of the node.

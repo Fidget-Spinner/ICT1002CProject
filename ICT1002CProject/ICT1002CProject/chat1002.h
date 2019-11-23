@@ -36,12 +36,11 @@
 //max length of a key or value's chars
 #define MAX_LENGTH_USER_INPUT MAX_ENTITY + 1 + MAX_RESPONSE + 1 
 
-// doubly linked list struct, used for the hash table elements
+// singly linked list struct, used for the hash table elements
 struct Data_Node {
 	char key[MAX_LENGTH_USER_INPUT + 2];
 	char value[MAX_LENGTH_USER_INPUT + 2];
 	struct Data_Node* next;
-	struct Data_Node* prev;
 };
 
 
