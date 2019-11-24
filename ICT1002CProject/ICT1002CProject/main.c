@@ -123,7 +123,7 @@ void prompt_user(char *buf, int n, const char *format, ...) {
 	vprintf(format, args);
 	printf(" ");
 	va_end(args);
-	printf("\n%s: ", chatbot_username());
+	printf("\nInput new answer: ");
 	
 	/* get the response from the user */
 	fgets(buf, n, stdin);
