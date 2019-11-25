@@ -53,7 +53,7 @@ int insertHashEntry(DATA_NODE * hashMap[], const char * key, const char * value,
   strcpy(tempValueBuf, value); // use tempBuf to store the value since value is const
   DATA_NODE *tableEntry = hashMap[index];
   DATA_NODE *newNode = createNode(str_upper(tempBuf), tempValueBuf);
-
+  //printf("[DEBUG]HashMap: %s %s\n", key, value);
   // check if out of memory
   if (newNode == NULL){
     return 0;
@@ -75,6 +75,7 @@ int insertHashEntry(DATA_NODE * hashMap[], const char * key, const char * value,
 			}
 			else if (override) {
 				strcpy(tableEntry->value, tempValueBuf);
+				//printf("[DEBUG]HashMap: Overrode\n");
 				//dont need the newNode anymore
 				free(newNode);
 				return 1;

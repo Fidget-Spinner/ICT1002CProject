@@ -149,13 +149,13 @@ int knowledge_read(FILE* f) {
 			removeTrailingNewLine(value);
 			switch (swap) {
 				case 0: // intent is "what"
-					insertHashEntry(LoadKnowledgeWhatMap, str_upper(key), value, 0); // what hashmap
+					insertHashEntry(LoadKnowledgeWhatMap, str_upper(key), value, 1); // what hashmap
 					break;
 				case 1: // intent is "who"
-					insertHashEntry(LoadKnowledgeWhoMap, str_upper(key), value, 0); // who hashmap
+					insertHashEntry(LoadKnowledgeWhoMap, str_upper(key), value, 1); // who hashmap
 					break;
 				case 2: // intent is "where"
-					insertHashEntry(LoadKnowledgeWhereMap, str_upper(key), value, 0); // where hashmap
+					insertHashEntry(LoadKnowledgeWhereMap, str_upper(key), value, 1); // where hashmap
 					break;			
 			}
 		}

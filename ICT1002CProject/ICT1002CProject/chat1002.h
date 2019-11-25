@@ -77,6 +77,9 @@ int chatbot_do_save(int inc, char* inv[], char* response, int n);
 int chatbot_is_smalltalk(const char* intent);
 int chatbot_do_smalltalk(int inc, char* inv[], char* resonse, int n);
 void respond_kb_errors(int kb_status, int inc, char* inv[], char* response, int n, char* what_to_respond, char questionEntityPtr[]);
+int chatbot_is_redefine(const char* intent);
+int chatbot_do_redefine(int inc, char* inv[], char* response, int n);
+
 
 /* functions defined in knowledge.c */
 int knowledge_get(const char* intent, const char* entity, char* response, int n);

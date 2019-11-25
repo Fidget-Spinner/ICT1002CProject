@@ -105,7 +105,7 @@ void respond_kb_errors(int kb_status, int inc, char * inv[], char* response, int
 	case KB_NOMEM:
 		snprintf(response, n, "I've run out of memory");
 		break;
-	case KB_NOTFOUND:
+	case KB_NOTFOUND: //if cant find it in the hashmap, then insert it in.
 		prompt_user(buf, n, "%s%s", "I don't know. ", user_input);
 		knowledge_put(inv[0], questionEntityPtr, buf);
 		snprintf(response, n, "Thank you.");
@@ -168,6 +168,8 @@ int chatbot_main(int inc, char* inv[], char* response, int n) {
 		return chatbot_do_reset(inc, inv, response, n);
 	else if (chatbot_is_save(inv[0]))
 		return chatbot_do_save(inc, inv, response, n);
+	else if (chatbot_is_redefine(inv[0]))
+		return chatbot_do_redefine(inc, inv, response, n);
 	else {
 		snprintf(response, n, "I don't understand \"%s\".", inv[0]);
 		return 0;
@@ -298,7 +300,7 @@ int chatbot_is_question(const char* intent) {
  */
 int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 
-	char questionEntityPtr[255] = ""; //Store entity of user input
+	char questionEntityPtr[MAX_LENGTH_USER_INPUT] = ""; //Store entity of user input
 
 	chatbot_do_question_helper(inc, inv, response, n, questionEntityPtr);
 	return 0;
@@ -464,5 +466,72 @@ int chatbot_do_smalltalk(int inc, char* inv[], char* response, int n) {
 		}
 	}
 	return 0;
+
+}
+
+/*
+ * Determine which an intent is redefine.
+ *
+ *
+ * Input:
+ *  intent - the intent
+ *
+ * Returns:
+ *  1, if the intent is the first word of one of the sredefine phrases
+ *  0, otherwise
+ */
+int chatbot_is_redefine(const char* intent) {
+
+	return compare_token(intent, "redefine") == 0;
+}
+
+void chatbot_do_redefine_helper(int inc, char* inv[], char* response, int n, char questionEntityPtr[]);
+/*
+ * Respond to.
+ *
+ * Redefines an answer to a question in knowledge base.
+ * 
+ *
+ * Returns:
+ *   0, if the chatbot should continue chatting
+ *   1, if the chatbot should stop chatting (e.g. the smalltalk was "goodbye" etc.)
+ */
+
+int chatbot_do_redefine(int inc, char* inv[], char* response, int n) {
+
+	char questionEntityBuf[MAX_LENGTH_USER_INPUT] = ""; //Store entity of user input
+
+	chatbot_do_redefine_helper(inc, inv, response, n, questionEntityBuf);
+	return 0;
+
+}
+
+void chatbot_do_redefine_helper(int inc, char* inv[], char* response, int n, char questionEntityPtr[]) {
+	DATA_NODE* hashMapToSearch = NULL;
+	char buf[MAX_LENGTH_USER_INPUT] = ""; //Store entity of user input
+	for (int i = 0; i < inc; i++) {
+		printf("%s\n", inv[i]);
+	}
+	if (inv[2] == NULL)
+	{
+		snprintf(response, n, "Please input a proper question!"); //If question is improper, break
+		return;
+	}
+	if (compare_token(inv[2], "is") || compare_token(inv[2], "are")) {
+		for (int b = 3; b < inc; b++)
+		{
+			strcat(questionEntityPtr, str_upper(inv[b])); //store input entity 
+				if (inv[b + 1] != NULL)
+					strcat(questionEntityPtr, " "); //check for space and insert space
+		}
+		prompt_user(buf, n, "%s", "Redefining...");
+		knowledge_put(inv[1], questionEntityPtr, buf);
+		snprintf(response, n, "Thank you.");
+	}
+	else {
+		snprintf(response, n, "Please input a proper question!"); //If question is improper, break
+	}
+	return;
+	
 
 }
