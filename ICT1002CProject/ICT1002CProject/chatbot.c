@@ -58,10 +58,6 @@ record KnowledgeBase[] = {
 	{"Greetings!", "Hey there!", "It's good to see you!"}
 	},
 
-	{"help",
-	{"Load <FILENAME> - to Load your .ini files", "Save to/as <FILENAME> - to Save new .ini file with new responses.", "Redefine <Intent>"}
-	},
-
 	{"how",
 	{"I'm doing great!", "T_T Not so good ...", "^_^ Great!"}
 	},
