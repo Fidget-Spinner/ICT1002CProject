@@ -328,26 +328,24 @@ void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, cha
 	DATA_NODE* hashMapToSearch = NULL;
 	char responseBuf[MAX_LENGTH_USER_INPUT];
 	int KB_STATUS;
-		if (inv[1] == NULL)
-		{
-			snprintf(response, n, "Please input a proper question!"); //If question is improper, break
-			return;
-		}
-		if (compare_token(inv[1], "are") == 0 || compare_token(inv[1], "is") == 0) //check for is and are
-		{
-			for (int b = 2; b < inc; b++)
-			{
-				strcat(questionEntityPtr, str_upper(inv[b])); //store input entity 
-				if (inv[b + 1] != NULL)
-					strcat(questionEntityPtr, " "); //check for space and insert space
-			}
-			KB_STATUS = knowledge_get(inv[0], questionEntityPtr, responseBuf, n);
-			respond_kb_errors(KB_STATUS, inc, inv, response, n , responseBuf, questionEntityPtr);
-		}
-		else {
-			snprintf(response, n, "Please input a proper question!"); //If question is inproper, break
-		}
+	int startSearchIndex;
+	if (inv[1] == NULL)
+	{
+		snprintf(response, n, "Please input a proper question!"); //If question is improper, break
+		return;
 	}
+	startSearchIndex = (compare_token(inv[1], "are") == 0 || compare_token(inv[1], "is") == 0) ? 2 : 1; //check for is and are and ignore it
+	for (startSearchIndex; startSearchIndex < inc; startSearchIndex++)
+	{
+		strcat(questionEntityPtr, str_upper(inv[startSearchIndex])); //store input entity 
+		if (inv[startSearchIndex + 1] != NULL)
+			strcat(questionEntityPtr, " "); //check for space and insert space
+	}
+	KB_STATUS = knowledge_get(inv[0], questionEntityPtr, responseBuf, n);
+	respond_kb_errors(KB_STATUS, inc, inv, response, n, responseBuf, questionEntityPtr);
+
+	}
+
 
 /*
  * Determine whether an intent is RESET.
@@ -475,7 +473,7 @@ int chatbot_is_smalltalk(const char* intent) {
 int chatbot_do_smalltalk(int inc, char* inv[], char* response, int n) {
 	char* smalltalkoutput;
 	int r = rand() % 3;
-	r = (compare_token(inv[0], "help") == 0) ? 0 : r;
+	r = (compare_token(inv[0], "help") == 0) ? 0 : r; //check for "help" smalltalk special case
 	for (int i = 0; i < sizeof(KnowledgeBase) / sizeof(KnowledgeBase[0]); ++i) {
 		if (compare_token(KnowledgeBase[i].intent, inv[0]) == 0) {
 			smalltalkoutput = KnowledgeBase[i].responses[r];
