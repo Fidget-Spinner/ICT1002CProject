@@ -55,7 +55,7 @@ typedef struct {
 	char* responses[SMALLTALK_RESPONSE_NUM]; //To change amount of strings responses have
 }record;
 
-record KnowledgeBase[] = {
+record SmallTalkBase[] = {
 	{"hello",
 	{"Greetings!", "Hey there!", "It's good to see you!"}
 	},
@@ -499,9 +499,9 @@ int chatbot_do_smalltalk(int inc, char* inv[], char* response, int n) {
 	char* smalltalkoutput;
 	int r = rand() % SMALLTALK_RESPONSE_NUM;
 	r = (compare_token(inv[0], "help") == 0) ? 0 : r; //check for "help" smalltalk special case which only has 1 output at index 0
-	for (int i = 0; i < sizeof(KnowledgeBase) / sizeof(KnowledgeBase[0]); ++i) {
-		if (compare_token(KnowledgeBase[i].intent, inv[0]) == 0) {
-			smalltalkoutput = KnowledgeBase[i].responses[r];
+	for (int i = 0; i < sizeof(SmallTalkBase) / sizeof(SmallTalkBase[0]); ++i) {
+		if (compare_token(SmallTalkBase[i].intent, inv[0]) == 0) {
+			smalltalkoutput = SmallTalkBase[i].responses[r];
 			snprintf(response, n, smalltalkoutput);
 		}
 	}
