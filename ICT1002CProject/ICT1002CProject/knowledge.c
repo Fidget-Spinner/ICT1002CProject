@@ -123,31 +123,32 @@ int knowledge_read(FILE* f) {
 	{
 		if (LoadedKnowledge[0] == '[')
 		{
+			swap = 0;
 			entityType = strtok(LoadedKnowledge, "[]");
 			// set swap if it finds one of these
-			swap = compare_token(entityType, "what") == 0 ? 0 : swap;
-			swap = compare_token(entityType, "who") == 0 ? 1 : swap;
-			swap = compare_token(entityType, "where") == 0 ? 2 : swap;
+			swap = compare_token(entityType, "what") == 0 ? 1 : swap;
+			swap = compare_token(entityType, "who") == 0 ? 2 : swap;
+			swap = compare_token(entityType, "where") == 0 ? 3 : swap;
 			indexofknowledge = -1; //reset the index to read knowledge
 		}
 		else if (LoadedKnowledge[0] == '\n' || LoadedKnowledge == "")
 		{
 			continue; //skip new lines or empty string
 		}
-		else if (strchr(LoadedKnowledge, '=') != NULL)
+		else if (strchr(LoadedKnowledge, '=') != NULL && swap) //make sure that it ignores things not placed under any tag
 		{
 			key = strtok(LoadedKnowledge, "=");
 			value = strtok(NULL, "=");
 			removeTrailingNewLine(key);
 			removeTrailingNewLine(value);
 			switch (swap) {
-				case 0: // intent is "what"
+				case 1: // intent is "what"
 					insertHashEntry(LoadKnowledgeWhatMap, str_upper(key), value, 1); // what hashmap
 					break;
-				case 1: // intent is "who"
+				case 2: // intent is "who"
 					insertHashEntry(LoadKnowledgeWhoMap, str_upper(key), value, 1); // who hashmap
 					break;
-				case 2: // intent is "where"
+				case 3: // intent is "where"
 					insertHashEntry(LoadKnowledgeWhereMap, str_upper(key), value, 1); // where hashmap
 					break;			
 			}
