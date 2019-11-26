@@ -462,11 +462,28 @@ int chatbot_is_smalltalk(const char* intent) {
 int chatbot_do_smalltalk(int inc, char* inv[], char* response, int n) {
 	char* smalltalkoutput;
 	int r = rand() % 3;
-	for (int i = 0; i < sizeof(KnowledgeBase) / sizeof(KnowledgeBase[0]); ++i) {
-		if (compare_token(KnowledgeBase[i].intent, inv[0]) == 0) {
-			int r = rand() % 3; //Random number from 0-2 for random response.
-			smalltalkoutput = KnowledgeBase[i].responses[r];
-			snprintf(response, n, smalltalkoutput);
+	char helpres[7][255] = {
+		{"================================= HELP INSTRUCTIONS ================================="},
+		{"RESET - to clean out all new response that have not been saved new .ini file. (reset)"},
+		{"LOAD - to load your .ini file. (load from <FILENAME>)"},
+		{"SAVE - to create and save your response to a new .ini file. (save as/to <FILENAME>)"},
+		{"REDEFINE - to modity the response in your .ini file. (redefine <INTENT ENTITY>)"},
+		{"EXIT - to exit the program. (exit)"},
+		{"====================================================================================="}
+	};
+	if (compare_token(inv[0], "help") == 0) {
+		for (int i = 0; i < 7; i++) {
+			printf("%s\n", helpres[i]);
+		}
+		snprintf(response, n,"Hope it helps!");
+	}
+	else {
+		for (int i = 0; i < sizeof(KnowledgeBase) / sizeof(KnowledgeBase[0]); ++i) {
+			if (compare_token(KnowledgeBase[i].intent, inv[0]) == 0) {
+				int r = rand() % 3; //Random number from 0-2 for random response.
+				smalltalkoutput = KnowledgeBase[i].responses[r];
+				snprintf(response, n, smalltalkoutput);
+			}
 		}
 	}
 	return 0;
