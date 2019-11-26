@@ -411,7 +411,7 @@ int chatbot_do_save(int inc, char* inv[], char* response, int n) {
 	else {
 		// ignores "as" and "to" and "at" for save is, save to, save at
 		index = (compare_token(inv[1], "as") == 0 || compare_token(inv[1], "to") == 0 || compare_token(inv[1], "at") == 0) ? 2 : 1; 
-		FILE* f = fopen(inv[index], "wb");
+		FILE* f = fopen(inv[index], "w");
 		if (f) { // check for file errors
 			knowledge_write(f);
 		}
