@@ -325,6 +325,11 @@ int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 		return 0;
 	}
 	startSearchIndex = (compare_token(inv[1], "are") == 0 || compare_token(inv[1], "is") == 0) ? 2 : 1; //check for is and are and ignore it
+	if (inv[2] == NULL)
+	{
+		snprintf(response, n, "Please input a proper question!"); //If question is improper, break
+		return 0;
+	}
 	for (startSearchIndex; startSearchIndex < inc; startSearchIndex++)
 	{
 		strcat(questionEntityPtr, str_upper(inv[startSearchIndex])); //store input entity 
@@ -523,7 +528,11 @@ int chatbot_do_redefine(int inc, char* inv[], char* response, int n) {
 		return 0;
 	}
 	startSearchIndex = (compare_token(inv[2], "is") || compare_token(inv[2], "are")) ? 3 : 2; //check for is/are and ignore
-
+	if (inv[3] == NULL)
+	{
+		snprintf(response, n, "Please input a proper question!"); //If question is improper, break
+		return 0;
+	}
 	for (int b = startSearchIndex; b < inc; b++)
 	{
 		strcat(questionEntityPtr, str_upper(inv[b])); //store input entity 
