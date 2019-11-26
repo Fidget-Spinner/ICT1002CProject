@@ -97,31 +97,6 @@ record SmallTalkBase[] = {
 
 };
 
-/* INTERNAL HELPER FUNCTIONS PROTOTYPE DEFINITIONS*/
-
-/*
-* Helper function for answering questions. Required by chatbot_do_question.
-*
-* inv[0] contains the the question word.
-* inv[1] may contain "is" or "are"; if so, it is skipped.
-* The remainder of the words form the entity.
-*
-* This function retrieves a value from the hashmap corresponding to the questionEntityPtr (key).
-*/
-void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, char questionEntityPtr[]);
-
-/*
-* Helper function for redefining entries. Required by chatbot_do_redefine
-*
-* inv[0] contains the the question word.
-* inv[1] may contain "is" or "are"; if so, it is skipped.
-* The remainder of the words form the entity.
-*
-* This function overwrites a value from the hashmap corresponding to questionEntityPtr (key).
-*/
-void chatbot_do_redefine_helper(int inc, char* inv[], char* response, int n, char questionEntityPtr[]);
-
-
 /* MAIN FUNCTIONS */
 
 /*
@@ -340,12 +315,6 @@ int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 
 	char questionEntityPtr[MAX_LENGTH_USER_INPUT] = ""; //Store entity of user input
 
-	chatbot_do_question_helper(inc, inv, response, n, questionEntityPtr);
-	return 0;
-
-}
-
-void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, char questionEntityPtr[]) {
 	DATA_NODE* hashMapToSearch = NULL;
 	char responseBuf[MAX_LENGTH_USER_INPUT];
 	int KB_STATUS;
@@ -353,7 +322,7 @@ void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, cha
 	if (inv[1] == NULL)
 	{
 		snprintf(response, n, "Please input a proper question!"); //If question is improper, break
-		return;
+		return 0;
 	}
 	startSearchIndex = (compare_token(inv[1], "are") == 0 || compare_token(inv[1], "is") == 0) ? 2 : 1; //check for is and are and ignore it
 	for (startSearchIndex; startSearchIndex < inc; startSearchIndex++)
@@ -365,7 +334,9 @@ void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, cha
 	KB_STATUS = knowledge_get(inv[0], questionEntityPtr, responseBuf, n);
 	respond_kb_errors(KB_STATUS, inc, inv, response, n, responseBuf, questionEntityPtr);
 
-	}
+	return 0;
+
+}
 
 
 /*
@@ -540,35 +511,30 @@ int chatbot_is_redefine(const char* intent) {
 
 int chatbot_do_redefine(int inc, char* inv[], char* response, int n) {
 
-	char questionEntityBuf[MAX_LENGTH_USER_INPUT] = ""; //Store entity of user input
+	char questionEntityPtr[MAX_LENGTH_USER_INPUT] = ""; //Store entity of user input
 
-	chatbot_do_redefine_helper(inc, inv, response, n, questionEntityBuf);
-	return 0;
-
-}
-
-void chatbot_do_redefine_helper(int inc, char* inv[], char* response, int n, char questionEntityPtr[]) {
 	DATA_NODE* hashMapToSearch = NULL;
 	char buf[MAX_LENGTH_USER_INPUT] = ""; //Store entity of user input
 	int startSearchIndex;
 	if (inv[2] == NULL)
 	{
 		snprintf(response, n, "Please input a proper question!"); //If question is improper, break
-		return;
+		return 0;
 	}
 	startSearchIndex = (compare_token(inv[2], "is") || compare_token(inv[2], "are")) ? 3 : 2; //check for is/are and ignore
 
 	for (int b = startSearchIndex; b < inc; b++)
 	{
 		strcat(questionEntityPtr, str_upper(inv[b])); //store input entity 
-			if (inv[b + 1] != NULL)
-				strcat(questionEntityPtr, " "); //check for space and insert space
+		if (inv[b + 1] != NULL)
+			strcat(questionEntityPtr, " "); //check for space and insert space
 	}
 	prompt_user(buf, n, "%s", "Redefining...");
 	knowledge_put(inv[1], questionEntityPtr, buf);
 	snprintf(response, n, "Thank you.");
 
-	return;
-	
+	return 0;
+
 
 }
+
