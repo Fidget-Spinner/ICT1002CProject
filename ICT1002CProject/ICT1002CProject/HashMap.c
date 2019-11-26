@@ -80,7 +80,7 @@ int insertHashEntry(DATA_NODE * hashMap[], const char * key, const char * value,
 				free(newNode);
 				return 1;
 			}
-			// if not same key, then a hash collision actually occured, so extend the doubly linked list
+			// if not same key, then a hash collision actually occured, so extend the singly linked list
     } else {
       // if tableEntry->next == NULL, that means that is the last element
       while (tableEntry->next != NULL)
