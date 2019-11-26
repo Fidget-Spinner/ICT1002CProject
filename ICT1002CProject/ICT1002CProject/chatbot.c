@@ -88,7 +88,7 @@ record SmallTalkBase[] = {
 		WHO [is/are]	- asks the chatbot a question									 						\n\
 		RESET			- wipes any loaded/learnt memory (reset)												\n\
 		LOAD [from]		- load .ini file into chatbot memory. (load [from] <FILENAME>)							\n\
-		SAVE			- saves the entries in chatbot's memory to an .ini file Eg.(save as/to/at <FILENAME>),	\n\
+		SAVE [as/to/at]	- saves the entries in chatbot's memory to an .ini file Eg.(save as/to/at <FILENAME>),	\n\
 		REDEFINE		- modify entries currently in memory Eg. (REDEFINE What is SIT?)						\n\
 		EXIT			- exit the program. (exit/quit),														\n\
 		====================================================================================="
@@ -409,6 +409,7 @@ int chatbot_do_save(int inc, char* inv[], char* response, int n) {
 		snprintf(response, n, "Error missing filename!");
 	}
 	else {
+		// ignores "as" and "to" and "at" for save is, save to, save at
 		index = (compare_token(inv[1], "as") == 0 || compare_token(inv[1], "to") == 0 || compare_token(inv[1], "at") == 0) ? 2 : 1; 
 		FILE* f = fopen(inv[index], "wb");
 		if (f) { // check for file errors
