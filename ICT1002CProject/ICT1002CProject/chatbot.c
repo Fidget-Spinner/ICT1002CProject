@@ -84,6 +84,8 @@ record SmallTalkBase[] = {
 	{
 		"================================= HELP INSTRUCTIONS =================================					\n\
 		WHAT [is/are]	- asks the chatbot a question									 						\n\
+		WHERE [is/are]	- asks the chatbot a question									 						\n\
+		WHO [is/are]	- asks the chatbot a question									 						\n\
 		RESET			- wipes any loaded/learnt memory (reset)												\n\
 		LOAD [from]		- load .ini file into chatbot memory. (load [from] <FILENAME>)							\n\
 		SAVE			- saves the entries in chatbot's memory to an .ini file Eg.(save as/to/at <FILENAME>),	\n\
@@ -505,9 +507,7 @@ int chatbot_do_smalltalk(int inc, char* inv[], char* response, int n) {
 			snprintf(response, n, smalltalkoutput);
 		}
 	}
-
 	return 0;
-
 }
 
 /*
