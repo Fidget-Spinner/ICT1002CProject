@@ -275,7 +275,7 @@ int chatbot_do_load(int inc, char* inv[], char* response, int n) {
 	if (check_is_empty(inv, response, n, 1, "Error missing filename!"))
 		return 0;
 	int index = (compare_token(inv[1], "from") == 0) ? 2 : 1;  // check for the "from" and ignore it
-	if (check_is_empty(inv, response, n, 2, "Error missing filename!"))
+	if (check_is_empty(inv, response, n, 2, "Error missing filename!") && index == 2) // only apply this for the "from"
 		return 0;
 	f = fopen(inv[index], "r");
 	if (f) {
@@ -338,7 +338,7 @@ int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 	if (check_is_empty(inv, response, n, 1, "Please input a proper question"))
 		return 0;
 	startSearchIndex = (compare_token(inv[1], "are") == 0 || compare_token(inv[1], "is") == 0) ? 2 : 1; //check for is and are and ignore it
-	if (check_is_empty(inv, response, n, 2, "Please input a proper question"))
+	if (check_is_empty(inv, response, n, 2, "Please input a proper question") && startSearchIndex == 2) // only apply this for the "from"
 		return 0;
 	for (startSearchIndex; startSearchIndex < inc; startSearchIndex++)
 	{
@@ -423,7 +423,7 @@ int chatbot_do_save(int inc, char* inv[], char* response, int n) {
 		return 0;
 	// ignores "as" and "to" and "at" for save is, save to, save at
 	index = (compare_token(inv[1], "as") == 0 || compare_token(inv[1], "to") == 0 || compare_token(inv[1], "at") == 0) ? 2 : 1; 
-	if (check_is_empty(inv, response, n, 2, "Error missing filename!"))
+	if (check_is_empty(inv, response, n, 2, "Error missing filename!") && index == 2) // only apply this for the "from"
 		return 0;
 	FILE* f = fopen(inv[index], "w");
 	if (f) { // check for file errors
@@ -534,7 +534,7 @@ int chatbot_do_redefine(int inc, char* inv[], char* response, int n) {
 	if (check_is_empty(inv, response, n, 2, "Please input a proper question!"))
 		return 0;
 	startSearchIndex = (compare_token(inv[2], "is") || compare_token(inv[2], "are")) ? 3 : 2; //check for is/are and ignore
-	if (check_is_empty(inv, response, n, 3, "Please input a proper question!"))
+	if (check_is_empty(inv, response, n, 3, "Please input a proper question!") && startSearchIndex == 3) // only apply this for the is and ares
 		return 0;
 	for (int b = startSearchIndex; b < inc; b++)
 	{
