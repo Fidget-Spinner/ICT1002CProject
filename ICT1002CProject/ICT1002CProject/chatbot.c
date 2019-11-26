@@ -72,7 +72,11 @@ record KnowledgeBase[] = {
 
 	{"nights",
 	{"Goodnight!", "I'm getting sleepy ...", "Sweet dreams!"}
-	}
+	},
+	{"It's",
+	{"Indeed it is", "Yes it is", "I agree"}
+	},
+
 };
 
 /*
@@ -251,11 +255,11 @@ int chatbot_do_load(int inc, char* inv[], char* response, int n) {
 		f = fopen(inv[index], "r");
 		if (f) {
 			err_code = knowledge_read(f);
-			if (err_code == 0) //Test for error reading
+			if (err_code) //Test for error reading
 			{
-				snprintf(response, n, "Successfully loaded!");
+				snprintf(response, n, "Successfully read %d response(s) from %s", err_code, inv[index]);
 			}
-			else if (knowledge_read(f) == 1)
+			else if (err_code == NULL || err_code == 0)
 			{
 				snprintf(response, n, "Error reading file!");
 			}
@@ -440,7 +444,7 @@ int chatbot_do_save(int inc, char* inv[], char* response, int n) {
  */
 int chatbot_is_smalltalk(const char* intent) {
 
-	return compare_token(intent, "hello") == 0 || compare_token(intent, "morning") == 0 || compare_token(intent, "afternoon") == 0 || compare_token(intent, "nights") == 0 || compare_token(intent, "how") == 0;;
+	return compare_token(intent, "hello") == 0 || compare_token(intent, "morning") == 0 || compare_token(intent, "afternoon") == 0 || compare_token(intent, "nights") == 0 || compare_token(intent, "how") == 0 || compare_token(intent, "it's") == 0;
 
 }
 

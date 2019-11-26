@@ -101,12 +101,12 @@ int knowledge_put(const char* intent, const char* entity, const char* response) 
  * Input:
  *   f - the file
  *
- * Returns: error code
+ * Returns: the number of entries read
  */
 int knowledge_read(FILE* f) {
 	// just a temporary buffer to store a single line of file input
 	char LoadedKnowledge[MAX_ENTITY + 1 + MAX_RESPONSE + 1];
-	int i = 0;
+	int count = 0;
 	int swap = 0;
 	int indexofknowledge = -1;;
 
@@ -115,7 +115,7 @@ int knowledge_read(FILE* f) {
 	if (f == NULL)
 	{
 		printf("Could not open the file\n");
-		return 1;
+		return 0;
 	}
 	while (fgets(LoadedKnowledge, MAX_ENTITY + 1 + MAX_RESPONSE + 1, f) != NULL) //Loop through ini file and store content to global knowledge
 	{
@@ -158,10 +158,11 @@ int knowledge_read(FILE* f) {
 					insertHashEntry(LoadKnowledgeWhereMap, str_upper(key), value, 1); // where hashmap
 					break;			
 			}
+			count++;
 		}
 		indexofknowledge++;
 	}
-	return 0;
+	return count;
 }
 
 
