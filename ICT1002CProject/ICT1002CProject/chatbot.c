@@ -46,11 +46,13 @@
 #include "chat1002.h"
 #include "HashMap.h"
 
+ /* GLOBALS */
+
 /* Just the hard coded base small talk responses.
 */
 typedef struct {
 	char* intent;
-	char* responses[3]; //To change amount of strings responses have
+	char* responses[SMALLTALK_RESPONSE_NUM]; //To change amount of strings responses have
 }record;
 
 record KnowledgeBase[] = {
@@ -80,17 +82,20 @@ record KnowledgeBase[] = {
 	
 	{"help",
 	{
-		"================================= HELP INSTRUCTIONS =================================	\n\
-		RESET - to clean out all new response that have not been saved new .ini file. (reset)	\n\
-		LOAD - to load your .ini file. (load from <FILENAME>)									\n\
-		SAVE - to create and save your response to a new .ini file. (save as/to <FILENAME>),	\n\
-		REDEFINE - to modity the response in your .ini file. (redefine <INTENT ENTITY>),		\n\
-		EXIT - to exit the program. (exit),														\n\
+		"================================= HELP INSTRUCTIONS =================================					\n\
+		WHAT [is/are]	- asks the chatbot a question									 						\n\
+		RESET			- wipes any loaded/learnt memory (reset)												\n\
+		LOAD [from]		- load .ini file into chatbot memory. (load [from] <FILENAME>)							\n\
+		SAVE			- saves the entries in chatbot's memory to an .ini file Eg.(save as/to/at <FILENAME>),	\n\
+		REDEFINE		- modify entries currently in memory Eg. (REDEFINE What is SIT?)						\n\
+		EXIT			- exit the program. (exit/quit),														\n\
 		====================================================================================="
 	}
 	}
 
 };
+
+/* INTERNAL HELPER FUNCTIONS PROTOTYPE DEFINITIONS*/
 
 /*
 * Helper function for answering questions. Required by chatbot_do_question.
@@ -99,9 +104,23 @@ record KnowledgeBase[] = {
 * inv[1] may contain "is" or "are"; if so, it is skipped.
 * The remainder of the words form the entity.
 *
-* This function retrieves a value from the hashmap corresponding to the intent.
+* This function retrieves a value from the hashmap corresponding to the questionEntityPtr (key).
 */
 void chatbot_do_question_helper(int inc, char* inv[], char* response, int n, char questionEntityPtr[]);
+
+/*
+* Helper function for redefining entries. Required by chatbot_do_redefine
+*
+* inv[0] contains the the question word.
+* inv[1] may contain "is" or "are"; if so, it is skipped.
+* The remainder of the words form the entity.
+*
+* This function overwrites a value from the hashmap corresponding to questionEntityPtr (key).
+*/
+void chatbot_do_redefine_helper(int inc, char* inv[], char* response, int n, char questionEntityPtr[]);
+
+
+/* MAIN FUNCTIONS */
 
 /*
 * Utility function to give an appropiate reponse to KB errors
@@ -455,7 +474,13 @@ int chatbot_do_save(int inc, char* inv[], char* response, int n) {
  */
 int chatbot_is_smalltalk(const char* intent) {
 
-	return compare_token(intent, "hello") == 0 || compare_token(intent, "morning") == 0 || compare_token(intent, "afternoon") == 0 || compare_token(intent, "nights") == 0 || compare_token(intent, "how") == 0 || compare_token(intent, "it's") == 0 || compare_token(intent, "help") == 0;
+	return compare_token(intent, "hello") == 0 
+		|| compare_token(intent, "morning") == 0 
+		|| compare_token(intent, "afternoon") == 0 
+		|| compare_token(intent, "nights") == 0 
+		|| compare_token(intent, "how") == 0 
+		|| compare_token(intent, "it's") == 0 
+		|| compare_token(intent, "help") == 0;
 
 }
 
@@ -472,8 +497,8 @@ int chatbot_is_smalltalk(const char* intent) {
  */
 int chatbot_do_smalltalk(int inc, char* inv[], char* response, int n) {
 	char* smalltalkoutput;
-	int r = rand() % 3;
-	r = (compare_token(inv[0], "help") == 0) ? 0 : r; //check for "help" smalltalk special case
+	int r = rand() % SMALLTALK_RESPONSE_NUM;
+	r = (compare_token(inv[0], "help") == 0) ? 0 : r; //check for "help" smalltalk special case which only has 1 output at index 0
 	for (int i = 0; i < sizeof(KnowledgeBase) / sizeof(KnowledgeBase[0]); ++i) {
 		if (compare_token(KnowledgeBase[i].intent, inv[0]) == 0) {
 			smalltalkoutput = KnowledgeBase[i].responses[r];
@@ -501,7 +526,7 @@ int chatbot_is_redefine(const char* intent) {
 	return compare_token(intent, "redefine") == 0;
 }
 
-void chatbot_do_redefine_helper(int inc, char* inv[], char* response, int n, char questionEntityPtr[]);
+
 /*
  * Respond to.
  *
@@ -525,10 +550,6 @@ int chatbot_do_redefine(int inc, char* inv[], char* response, int n) {
 void chatbot_do_redefine_helper(int inc, char* inv[], char* response, int n, char questionEntityPtr[]) {
 	DATA_NODE* hashMapToSearch = NULL;
 	char buf[MAX_LENGTH_USER_INPUT] = ""; //Store entity of user input
-	// DEBUGGING CODE
-	//for (int i = 0; i < inc; i++) {
-	//	printf("%s\n", inv[i]);
-	//}
 	int startSearchIndex;
 	if (inv[2] == NULL)
 	{

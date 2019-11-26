@@ -101,14 +101,16 @@ int knowledge_put(const char* intent, const char* entity, const char* response) 
  * Input:
  *   f - the file
  *
- * Returns: the number of entries read
+ * Returns: the number of entries read, 0 if failed
  */
 int knowledge_read(FILE* f) {
 	// just a temporary buffer to store a single line of file input
 	char LoadedKnowledge[MAX_ENTITY + 1 + MAX_RESPONSE + 1];
-	int count = 0;
 	int swap = 0;
-	int indexofknowledge = -1;;
+	int indexofknowledge = -1;
+	char* entityType;
+
+	int numOfEntries = 0; //counts the number of responses/entries inside the file, this is just for informing the user.
 
 	char *key;
 	char *value;
@@ -121,25 +123,16 @@ int knowledge_read(FILE* f) {
 	{
 		if (LoadedKnowledge[0] == '[')
 		{
-			if (compare_token(strtok(LoadedKnowledge, "[]"), "what") == 0)
-			{
-				swap = 0;
-				indexofknowledge = -1;
-			}
-			else if (compare_token(strtok(LoadedKnowledge, "[]"), "who") == 0)
-			{
-				swap = 1;
-				indexofknowledge = -1;
-			}
-			else if (compare_token(strtok(LoadedKnowledge, "[]"), "where") == 0)
-			{
-				swap = 2;
-				indexofknowledge = -1;
-			}
+			entityType = strtok(LoadedKnowledge, "[]");
+			// set swap if it finds one of these
+			swap = compare_token(entityType, "what") == 0 ? 0 : swap;
+			swap = compare_token(entityType, "who") == 0 ? 1 : swap;
+			swap = compare_token(entityType, "where") == 0 ? 2 : swap;
+			indexofknowledge = -1; //reset the index to read knowledge
 		}
 		else if (LoadedKnowledge[0] == '\n' || LoadedKnowledge == "")
 		{
-			continue;
+			continue; //skip new lines or empty string
 		}
 		else if (strchr(LoadedKnowledge, '=') != NULL)
 		{
@@ -158,11 +151,11 @@ int knowledge_read(FILE* f) {
 					insertHashEntry(LoadKnowledgeWhereMap, str_upper(key), value, 1); // where hashmap
 					break;			
 			}
-			count++;
+			numOfEntries++; //add 1 entry to number of entries
 		}
 		indexofknowledge++;
 	}
-	return count;
+	return numOfEntries;
 }
 
 

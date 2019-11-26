@@ -29,6 +29,9 @@
 #define KB_INVALID  -2
 #define KB_NOMEM    -3
 
+//smalltalk response bank
+#define SMALLTALK_RESPONSE_NUM 3
+
 /** global hashmap settings **/
 
 // the larger this value is, the faster the hashmap will be for extremely large number of inputs, however the tradeoff is that more RAM will be used
