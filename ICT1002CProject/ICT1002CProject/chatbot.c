@@ -97,6 +97,23 @@ record SmallTalkBase[] = {
 
 };
 
+
+/* INTERNAL HELPER FUNCTIONS */
+/*
+* Helps to check that the inv's index is not empty or null
+* @param index: The index of inv to access and check
+* @param err_msg: The error msg to print out 
+* returns 1 if is empty, 0 otherwise
+*/
+int check_is_empty(char * inv[], char * response, int n, int index, char * err_msg) {
+	if (inv[index] == "" || inv[index] == NULL)
+	{
+		snprintf(response, n, err_msg);
+		return 1;
+	}
+	return 0;
+}
+
 /* MAIN FUNCTIONS */
 
 /*
@@ -255,29 +272,28 @@ int chatbot_is_load(const char* intent) {
 int chatbot_do_load(int inc, char* inv[], char* response, int n) {
 	FILE* f;
 	int err_code;
-	if (inv[1] == "" || inv[1] == NULL)
-	{
-		snprintf(response, n, "Error missing filename!");
+	if (check_is_empty(inv, response, n, 1, "Error missing filename!"))
+		return 0;
+	int index = (compare_token(inv[1], "from") == 0) ? 2 : 1;  // check for the "from" and ignore it
+	if (check_is_empty(inv, response, n, 2, "Error missing filename!"))
+		return 0;
+	f = fopen(inv[index], "r");
+	if (f) {
+		err_code = knowledge_read(f);
+		if (err_code) //Test for error reading
+		{
+			snprintf(response, n, "Successfully read %d response(s) from %s", err_code, inv[index]);
+		}
+		else if (err_code == 0)
+		{
+			snprintf(response, n, "Error reading file!");
+		}
+		fclose(f);
 	}
 	else {
-		int index = (compare_token(inv[1], "from") == 0) ? 2 : 1;  // check for the "from" and ignore it
-		f = fopen(inv[index], "r");
-		if (f) {
-			err_code = knowledge_read(f);
-			if (err_code) //Test for error reading
-			{
-				snprintf(response, n, "Successfully read %d response(s) from %s", err_code, inv[index]);
-			}
-			else if (err_code == 0)
-			{
-				snprintf(response, n, "Error reading file!");
-			}
-			fclose(f);
-		}
-		else {
-			snprintf(response, n, "Error opening file! Check the name or the file permissions.");
-		}
+		snprintf(response, n, "Error opening file! Check the name or the file permissions.");
 	}
+	
 	return 0;
 
 }
@@ -319,17 +335,11 @@ int chatbot_do_question(int inc, char* inv[], char* response, int n) {
 	char responseBuf[MAX_LENGTH_USER_INPUT];
 	int KB_STATUS;
 	int startSearchIndex;
-	if (inv[1] == NULL)
-	{
-		snprintf(response, n, "Please input a proper question!"); //If question is improper, break
+	if (check_is_empty(inv, response, n, 1, "Please input a proper question"))
 		return 0;
-	}
 	startSearchIndex = (compare_token(inv[1], "are") == 0 || compare_token(inv[1], "is") == 0) ? 2 : 1; //check for is and are and ignore it
-	if (inv[2] == NULL)
-	{
-		snprintf(response, n, "Please input a proper question!"); //If question is improper, break
+	if (check_is_empty(inv, response, n, 2, "Please input a proper question"))
 		return 0;
-	}
 	for (startSearchIndex; startSearchIndex < inc; startSearchIndex++)
 	{
 		strcat(questionEntityPtr, str_upper(inv[startSearchIndex])); //store input entity 
@@ -409,31 +419,30 @@ int chatbot_is_save(const char* intent) {
  */
 int chatbot_do_save(int inc, char* inv[], char* response, int n) {
 	int index;
-	if (inv[1] == "" || inv[1] == NULL)
-	{
-		snprintf(response, n, "Error missing filename!");
+	if (check_is_empty(inv, response, n, 1, "Error missing filename!"))
+		return 0;
+	// ignores "as" and "to" and "at" for save is, save to, save at
+	index = (compare_token(inv[1], "as") == 0 || compare_token(inv[1], "to") == 0 || compare_token(inv[1], "at") == 0) ? 2 : 1; 
+	if (check_is_empty(inv, response, n, 2, "Error missing filename!"))
+		return 0;
+	FILE* f = fopen(inv[index], "w");
+	if (f) { // check for file errors
+		knowledge_write(f);
 	}
 	else {
-		// ignores "as" and "to" and "at" for save is, save to, save at
-		index = (compare_token(inv[1], "as") == 0 || compare_token(inv[1], "to") == 0 || compare_token(inv[1], "at") == 0) ? 2 : 1; 
-		FILE* f = fopen(inv[index], "w");
-		if (f) { // check for file errors
-			knowledge_write(f);
-		}
-		else {
-			snprintf(response, n, "%s %s", "Could not create/open file with the name", inv[index]);
-			return 0;
-		}
-		
-		if (ferror(f)) {
-			snprintf(response, n, "%s %s", "Could not save to", inv[index]);
-			return 0;
-		}
-		else {
-			snprintf(response, n, "%s %s", "My knowledge has been saved to", inv[index]);
-		}
-		fclose(f);
+		snprintf(response, n, "%s %s", "Could not create/open file with the name", inv[index]);
+		return 0;
 	}
+		
+	if (ferror(f)) {
+		snprintf(response, n, "%s %s", "Could not save to", inv[index]);
+		return 0;
+	}
+	else {
+		snprintf(response, n, "%s %s", "My knowledge has been saved to", inv[index]);
+	}
+	fclose(f);
+	
 
 	return 0;
 
@@ -522,17 +531,11 @@ int chatbot_do_redefine(int inc, char* inv[], char* response, int n) {
 	DATA_NODE* hashMapToSearch = NULL;
 	char buf[MAX_LENGTH_USER_INPUT] = ""; //Store entity of user input
 	int startSearchIndex;
-	if (inv[2] == NULL)
-	{
-		snprintf(response, n, "Please input a proper question!"); //If question is improper, break
+	if (check_is_empty(inv, response, n, 2, "Please input a proper question!"))
 		return 0;
-	}
 	startSearchIndex = (compare_token(inv[2], "is") || compare_token(inv[2], "are")) ? 3 : 2; //check for is/are and ignore
-	if (inv[3] == NULL)
-	{
-		snprintf(response, n, "Please input a proper question!"); //If question is improper, break
+	if (check_is_empty(inv, response, n, 3, "Please input a proper question!"))
 		return 0;
-	}
 	for (int b = startSearchIndex; b < inc; b++)
 	{
 		strcat(questionEntityPtr, str_upper(inv[b])); //store input entity 
