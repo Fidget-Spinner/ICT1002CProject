@@ -21,7 +21,7 @@
 #define MAX_ENTITY   64
 
 /* the maximum number of characters allowed in a response (including the terminating null) */
-#define MAX_RESPONSE 256
+#define MAX_RESPONSE 1024
 
 /* return codes for knowledge_get() and knowledge_put() */
 #define KB_OK        0
