@@ -525,28 +525,28 @@ int chatbot_do_redefine(int inc, char* inv[], char* response, int n) {
 void chatbot_do_redefine_helper(int inc, char* inv[], char* response, int n, char questionEntityPtr[]) {
 	DATA_NODE* hashMapToSearch = NULL;
 	char buf[MAX_LENGTH_USER_INPUT] = ""; //Store entity of user input
-	for (int i = 0; i < inc; i++) {
-		printf("%s\n", inv[i]);
-	}
+	// DEBUGGING CODE
+	//for (int i = 0; i < inc; i++) {
+	//	printf("%s\n", inv[i]);
+	//}
+	int startSearchIndex;
 	if (inv[2] == NULL)
 	{
 		snprintf(response, n, "Please input a proper question!"); //If question is improper, break
 		return;
 	}
-	if (compare_token(inv[2], "is") || compare_token(inv[2], "are")) {
-		for (int b = 3; b < inc; b++)
-		{
-			strcat(questionEntityPtr, str_upper(inv[b])); //store input entity 
-				if (inv[b + 1] != NULL)
-					strcat(questionEntityPtr, " "); //check for space and insert space
-		}
-		prompt_user(buf, n, "%s", "Redefining...");
-		knowledge_put(inv[1], questionEntityPtr, buf);
-		snprintf(response, n, "Thank you.");
+	startSearchIndex = (compare_token(inv[2], "is") || compare_token(inv[2], "are")) ? 3 : 2; //check for is/are and ignore
+
+	for (int b = startSearchIndex; b < inc; b++)
+	{
+		strcat(questionEntityPtr, str_upper(inv[b])); //store input entity 
+			if (inv[b + 1] != NULL)
+				strcat(questionEntityPtr, " "); //check for space and insert space
 	}
-	else {
-		snprintf(response, n, "Please input a proper question!"); //If question is improper, break
-	}
+	prompt_user(buf, n, "%s", "Redefining...");
+	knowledge_put(inv[1], questionEntityPtr, buf);
+	snprintf(response, n, "Thank you.");
+
 	return;
 	
 
