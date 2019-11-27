@@ -81,18 +81,16 @@ record SmallTalkBase[] = {
 	},
 	
 	{"help",
-	{
-		"================================= HELP INSTRUCTIONS =================================					\n\
-		WHAT [is/are]	- asks the chatbot a question									 						\n\
-		WHERE [is/are]	- asks the chatbot a question									 						\n\
-		WHO [is/are]	- asks the chatbot a question									 						\n\
-		RESET			- wipes any loaded/learnt memory (reset)												\n\
-		LOAD [from]		- load .ini file into chatbot memory. (load [from] <FILENAME>)							\n\
-		SAVE [as/to/at]	- saves the entries in chatbot's memory to an .ini file Eg.(save as/to/at <FILENAME>),	\n\
-		REDEFINE		- modify entries currently in memory Eg. (REDEFINE What is SIT?)						\n\
-		EXIT			- exit the program. (exit/quit),														\n\
-		====================================================================================="
-	}
+	{"	================================= HELP INSTRUCTIONS =================================\n\
+	WHAT [is/are]	- asks the chatbot a question\n\
+	WHERE [is/are]	- asks the chatbot a question\n\
+	WHO [is/are]	- asks the chatbot a question\n\
+	RESET		- wipes any loaded/learnt memory (reset)\n\
+	LOAD [from]	- load .ini file into chatbot memory. (load [from] <FILENAME>)\n\
+	SAVE [as/to/at]	- saves the entries in chatbot's memory to an .ini file Eg.(save as/to/at <FILENAME>)\n\
+	REDEFINE	- modify entries currently in memory Eg. (REDEFINE What is SIT?)\n\
+	EXIT		- exit the program. (exit/quit)\n\
+	====================================================================================="}
 	}
 
 };
@@ -150,7 +148,7 @@ void respond_kb_errors(int kb_status, int inc, char * inv[], char* response, int
   */
 const char* chatbot_botname() {
 
-	return "Chatbot";
+	return "Ken";
 
 }
 
@@ -461,7 +459,9 @@ int chatbot_do_save(int inc, char* inv[], char* response, int n) {
  *  0, otherwise
  */
 int chatbot_is_smalltalk(const char* intent) {
-
+	if (compare_token(intent, "hi") == 0 || compare_token(intent, "hey") == 0) {
+		strcpy(intent, "hello");
+	}
 	return compare_token(intent, "hello") == 0 
 		|| compare_token(intent, "morning") == 0 
 		|| compare_token(intent, "afternoon") == 0 
